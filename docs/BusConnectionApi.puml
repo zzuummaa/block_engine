@@ -1,0 +1,42 @@
+@startuml
+
+interface Data {
+    Структура фиксированной длины
+}
+
+class Bus {
+    TypeId getType()
+    DataRef data()
+}
+
+class Connectable {
+    DataWrapper<Type1> data1
+    DataWrapper<Type2> data2
+    сonnectInputs(Connector)
+    connectOutputs(Connector)
+    validateInputs(Connector)
+    validateOutputs(Connector)
+}
+
+class Connector {
+    Connector(BusCount)
+    void connect(Index, BusRef)
+    BusRefArray getBusses()
+}
+
+class DataStorage {
+    Отвечает за размещение данных в памяти
+    (DataRef, Position) add(TypeId, Data)
+}
+
+class BusLinker {
+    void link()
+}
+
+Bus -> Data
+DataStorage -> Data
+Connector -> Bus
+'Bus -> DataStorage
+Connectable -> Connector
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+
+class Connectable {
+    DataWrapper<Type1> data1
+    DataWrapper<Type2> data2
+    сonnectInputs(Connector)
+    connectOutputs(Connector)
+    validateInputs(Connector)
+    validateOutputs(Connector)
+}
+
+class LinkEngine {
+    addBlock(ConnectableId, ConnectableRef)
+    addLink(ConnectableId, BusIdx, ConnectableId, BusIdx)
+}
+
+LinkEngine -> Connectable
+
+@enduml
