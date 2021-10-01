@@ -21,16 +21,16 @@ public:
     }
 
     void connectInputs(Connector &connector) override {
-        inputs.resize(connector.size());
-        for (size_t i = 0; i < connector.size(); i++) {
-            auto& bus = connector[i];
+        auto& busses = connector.getBusses();
+        inputs.resize(busses.size());
+        for (size_t i = 0; i < busses.size(); i++) {
+            auto& bus = busses[i];
             inputs[i] = bus.data<int&>();
         }
     }
 
     void connectOutputs(Connector &connector) override {
-        output.resize(1);
-        output[0] = connector[0];
+        output = connector[0];
     }
 
     bool validateInputs(const Connector &connector) override {

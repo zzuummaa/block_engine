@@ -14,7 +14,9 @@ public:
     virtual bool validateOutputs(const Connector&) = 0;
 };
 
-
+class IBlockFactory {
+    virtual IBlock* createBlockByName() = 0;
+};
 
 //template<
 //    typename InType,

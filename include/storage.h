@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include "type_info.h"
 
+class DataStorage;
 class StaticDataStorage;
 
 class Position {
@@ -22,6 +23,25 @@ public:
     Position(const Position& position) = default;
 };
 
+class DataRef {
+    friend class DataStorage;
+
+    char* mData;
+
+    explicit DataRef(char* data) : mData(data) { }
+
+public:
+    DataRef(const DataRef& dataRef) = default;
+
+    const TypeInfo& type_info() {
+        return *reinterpret_cast<TypeInfo*>(mData);
+    }
+
+    void* data() {
+        return mData + sizeof(TypeInfo);
+    }
+};
+
 class DataStorage {
     std::vector<char> buffer;
 
@@ -30,14 +50,12 @@ public:
     DataStorage(const DataStorage& dataStorage) = delete;
     DataStorage(DataStorage&& dataStorage) = default;
 
-    void* push_back(const TypeInfo& info) {
-        struct TypeInfoRef { const TypeInfo& info; };
-
+    DataRef push_back(const TypeInfo& info) {
         auto* new_back = static_cast<char*>(buffer.data() + buffer.size());
-        buffer.resize(buffer.size() + sizeof(TypeInfoRef) + info.size());
+        buffer.resize(buffer.size() + sizeof(TypeInfo) + info.size());
 
-        new (new_back) TypeInfoRef{ .info = info };
-        return new_back;
+        new (new_back)TypeInfo(info);
+        return DataRef(new_back);
     }
 };
 

@@ -16,8 +16,8 @@ void LinkEngine::addBlock(int block_id, IBlock* block, int inputs_count, int out
 }
 
 void LinkEngine::addLink(
-    int block_in_id, int bus_in_idx,
     int block_out_id, int bus_out_idx,
+    int block_in_id, int bus_in_idx,
     const TypeInfo& info) {
 
     auto in_block_it = blocks.find(block_in_id);
@@ -28,10 +28,10 @@ void LinkEngine::addLink(
     if (out_block_it == blocks.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
     auto& out_connector = out_block_it->second.output;
 
-    auto* data = storage.push_back(info);
+    auto dataRef = storage.push_back(info);
 
-    in_connector.connect(bus_in_idx, Bus(data));
-    out_connector.connect(bus_out_idx, Bus(data));
+    in_connector.connect(bus_in_idx, Bus(dataRef.data()));
+    out_connector.connect(bus_out_idx, Bus(dataRef.data()));
 }
 
 void LinkEngine::linkBlocks() {
