@@ -4,6 +4,10 @@ void Connector::connect(int index, const Bus &bus) {
     at(index) = bus;
 }
 
-const std::vector<Bus>& Connector::getBusses() {
+const std::vector<Bus>& Connector::getBusses() const {
+    return *this;
+}
+
+std::vector<Bus> &Connector::getBusses() {
     return *this;
 }

@@ -18,8 +18,7 @@ struct Bus {
 
     template<typename DataType>
     DataType& data_unchecked() {
-        struct TypeInfoRef { const TypeInfo& info; };
-        auto* start_data = static_cast<char*>(data_) + sizeof(TypeInfoRef);
+        auto* start_data = static_cast<char*>(data_) + sizeof(TypeInfo);
         auto* typed_data = reinterpret_cast<DataType*>(start_data);
         return *typed_data;
     }

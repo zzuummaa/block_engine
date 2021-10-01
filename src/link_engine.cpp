@@ -28,7 +28,7 @@ void LinkEngine::addLink(
     if (out_block_it == blocks.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
     auto& out_connector = out_block_it->second.output;
 
-    auto dataRef = storage.push_back(info);
+    auto dataRef = storage.alloc(info);
 
     in_connector.connect(bus_in_idx, Bus(dataRef.data()));
     out_connector.connect(bus_out_idx, Bus(dataRef.data()));

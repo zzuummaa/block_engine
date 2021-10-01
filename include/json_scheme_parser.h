@@ -19,20 +19,24 @@ class JsonSchemeParser {
 public:
     explicit JsonSchemeParser(std::istream &is) : json_object(nlohmann::json::parse(is)) {}
 
-    void parse(LinkEngine& linkEngine) {
+    void parse(LinkEngine& linkEngine, DataStorage& blockStorage) {
         std::unordered_map<int, TypeInfo> typeMap;
 
         for (auto& json_type : json_object.at("types")) {
             auto id = json_type["id"].get<int>();
             if (typeMap.find(id) != typeMap.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
-            typeMap[id] = type_factory.createTypeInfoByName(json_type["name"].get<std::string>());
+            typeMap.emplace(std::make_pair(
+                id,
+                type_factory.createTypeInfoByName(json_type["name"].get<std::string>())
+            ));
         }
 
         for (auto& json_block : json_object.at("blocks")) {
             linkEngine.addBlock(
                 json_block["block_id"].get<int>(),
                 block_factory.createBlockByName(
-                    json_block["block_type"].get<std::string>()
+                    json_block["block_type"].get<std::string>(),
+                    blockStorage
                 ),
                 json_block["input_count"].get<int>(),
                 json_block["output_count"].get<int>()

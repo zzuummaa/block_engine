@@ -15,7 +15,6 @@ public:
     explicit ConstBlock(const OutType& value) : value(value) {}
 
     bool calc() override {
-        std::accumulate(inputs.begin(), inputs.end(), 0);
         return true;
     }
 
@@ -23,7 +22,7 @@ public:
 
     void connectOutputs(Connector &connector) override {
         auto& busses = connector.getBusses();
-        busses[0] = value;
+        busses[0].data_unchecked<OutType>() = value;
     }
 
     bool validateInputs(const Connector &connector) override {

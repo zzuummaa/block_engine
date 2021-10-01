@@ -15,7 +15,9 @@ public:
 
     void connect(int index, const Bus& bus);
 
-    const std::vector<Bus>& getBusses();
+    [[nodiscard]] const std::vector<Bus>& getBusses() const;
+
+    std::vector<Bus>& getBusses();
 };
 
 #endif //MODERN_CPP_DESIGN_CONNECTOR_H

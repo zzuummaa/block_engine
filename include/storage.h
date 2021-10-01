@@ -46,16 +46,26 @@ class DataStorage {
     std::vector<char> buffer;
 
 public:
-    DataStorage() = default;
+    DataStorage() : buffer(1) { };
     DataStorage(const DataStorage& dataStorage) = delete;
-    DataStorage(DataStorage&& dataStorage) = default;
+    DataStorage(DataStorage&& dataStorage) = delete;
 
-    DataRef push_back(const TypeInfo& info) {
+    DataRef alloc(const TypeInfo& info) {
         auto* new_back = static_cast<char*>(buffer.data() + buffer.size());
         buffer.resize(buffer.size() + sizeof(TypeInfo) + info.size());
 
         new (new_back)TypeInfo(info);
         return DataRef(new_back);
+    }
+
+    template<typename DataType>
+    DataRef push_back(DataType&& data) {
+        auto info = TypeInfo(typeid(data), sizeof(DataType));
+        auto data_ref = alloc(info);
+
+        new (data_ref.data()) DataType(data);
+
+        return data_ref;
     }
 };
 
