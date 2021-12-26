@@ -9,7 +9,7 @@
 #include "block.h"
 
 template<typename OperandType>
-class SumBlock : IBlock {
+class SumBlock : public IBlock {
     std::vector<OperandType*> inputs;
     OperandType* output;
 

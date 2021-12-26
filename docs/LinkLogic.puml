@@ -9,11 +9,12 @@ class Connectable {
     validateOutputs(Connector)
 }
 
-class LinkEngine {
+class LinkLogic {
+    Отвечает за связывание блоков
     addBlock(ConnectableId, ConnectableRef)
     addLink(ConnectableId, BusIdx, ConnectableId, BusIdx)
 }
 
-LinkEngine -> Connectable
+LinkLogic -> Connectable
 
 @enduml

@@ -1,3 +1,4 @@
+#include <memory>
 #include <fstream>
 #include <string>
 
@@ -9,18 +10,16 @@
 
 class SimpleBlockFactory {
 public:
-    static IBlock* createBlockByName(const std::string& name, DataStorage& blockStorage) {
-        void* block = nullptr;
+    static std::shared_ptr<IBlock> createBlockByName(const std::string& name, DataStorage& blockStorage) {
         if (name == "const_int") {
-            block = blockStorage.push_back(ConstBlock<int>(3)).data();
+            return std::static_pointer_cast<IBlock>(std::make_shared<ConstBlock<int>>(3));
         } else if (name == "sum_2_int") {
-            block = blockStorage.push_back(SumBlock<int>()).data();
+            return std::static_pointer_cast<IBlock>(std::make_shared<SumBlock<int>>());
         } else if (name == "console_int") {
-            block = blockStorage.push_back(ConsoleBlock<int>()).data();
+            return std::static_pointer_cast<IBlock>(std::make_shared<ConsoleBlock<int>>());
         }
 
-        if (block == nullptr) throw std::runtime_error(__PRETTY_FUNCTION__);
-        return reinterpret_cast<IBlock*>(block);
+        throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 };
 
@@ -36,14 +35,13 @@ public:
 
 int main() {
     DataStorage blockStorage;
-    LinkEngine linkEngine;
+    LinkLogic linkLogic;
 
     std::fstream fs("test.json");
     JsonSchemeParser<SimpleBlockFactory, SimpleTypeFactory> jsonSchemeParser(fs);
-    jsonSchemeParser.parse(linkEngine, blockStorage);
+    jsonSchemeParser.parse(linkLogic, blockStorage);
 
-    linkEngine.linkBlocks();
-
+    linkLogic.linkBlocks();
 
     return 0;
 }

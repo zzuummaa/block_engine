@@ -46,13 +46,19 @@ class DataStorage {
     std::vector<char> buffer;
 
 public:
-    DataStorage() : buffer(1) { };
+    DataStorage() {
+        // TODO make storage dynamically resizable
+        buffer.reserve(2048);
+    };
     DataStorage(const DataStorage& dataStorage) = delete;
     DataStorage(DataStorage&& dataStorage) = delete;
 
     DataRef alloc(const TypeInfo& info) {
         auto* new_back = static_cast<char*>(buffer.data() + buffer.size());
-        buffer.resize(buffer.size() + sizeof(TypeInfo) + info.size());
+        auto new_size = buffer.size() + sizeof(TypeInfo) + info.size();
+
+        if (new_size > buffer.capacity()) throw std::runtime_error(__PRETTY_FUNCTION__);
+        buffer.resize(new_size);
 
         new (new_back)TypeInfo(info);
         return DataRef(new_back);

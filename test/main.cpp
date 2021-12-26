@@ -3,7 +3,6 @@
 #include <iostream>
 #include <array>
 
-
 int main() {
     std::cout << "sum is " << std::endl;
 

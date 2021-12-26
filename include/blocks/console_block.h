@@ -5,7 +5,7 @@
 #include "block.h"
 
 template<typename InType>
-class ConsoleBlock : IBlock {
+class ConsoleBlock : public IBlock {
     InType* input;
 public:
 

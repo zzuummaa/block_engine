@@ -8,7 +8,7 @@
 #include "block.h"
 
 template<typename OutType>
-class ConstBlock : IBlock {
+class ConstBlock : public IBlock {
     OutType value;
 public:
 

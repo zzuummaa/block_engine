@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <istream>
 
-#include "link_engine.h"
+#include "link_logic.h"
 
 template<typename BlockFactory, typename TypeFactory>
 class JsonSchemeParser {
@@ -19,7 +19,7 @@ class JsonSchemeParser {
 public:
     explicit JsonSchemeParser(std::istream &is) : json_object(nlohmann::json::parse(is)) {}
 
-    void parse(LinkEngine& linkEngine, DataStorage& blockStorage) {
+    void parse(LinkLogic& linkEngine, DataStorage& blockStorage) {
         std::unordered_map<int, TypeInfo> typeMap;
 
         for (auto& json_type : json_object.at("types")) {
@@ -46,7 +46,7 @@ public:
         for (auto& json_link : json_object.at("links")) {
             linkEngine.addLink(
                 json_link["block_out_id"].get<int>(),
-                json_link["block_out_idx"].get<int>(),
+                json_link["bus_out_idx"].get<int>(),
                 json_link["block_in_id"].get<int>(),
                 json_link["bus_in_idx"].get<int>(),
                 typeMap.at(json_link["type_id"].get<int>())
