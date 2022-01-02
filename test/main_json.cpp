@@ -7,10 +7,12 @@
 #include <blocks/console_block.h>
 
 #include <json_scheme_parser.h>
+#include <scheme_validator.h>
+#include <graph.h>
 
 class SimpleBlockFactory {
 public:
-    static std::shared_ptr<IBlock> createBlockByName(const std::string& name, DataStorage& blockStorage) {
+    static std::shared_ptr<IBlock> createBlockByName(const std::string& name) {
         if (name == "const_int") {
             return std::static_pointer_cast<IBlock>(std::make_shared<ConstBlock<int>>(3));
         } else if (name == "sum_2_int") {
@@ -34,14 +36,13 @@ public:
 };
 
 int main() {
-    DataStorage blockStorage;
-    LinkLogic linkLogic;
-
     std::fstream fs("test.json");
-    JsonSchemeParser<SimpleBlockFactory, SimpleTypeFactory> jsonSchemeParser(fs);
-    jsonSchemeParser.parse(linkLogic, blockStorage);
+    auto scheme = JsonSchemeParser(fs).parse();
+    if (!SchemeValidator().validate(scheme)) throw std::runtime_error(__PRETTY_FUNCTION__);
 
-    linkLogic.linkBlocks();
+    auto calc_order = graph::topologySort(scheme);
+
+    std::copy(calc_order.begin(), calc_order.end(), std::ostream_iterator<int>(std::cout, " "));
 
     return 0;
 }

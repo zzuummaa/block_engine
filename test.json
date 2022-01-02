@@ -2,11 +2,16 @@
   "types": [
     { "id": 1, "name": "int" }
   ],
+  "block_types": [
+    { "id": 1, "name":  "const_int" },
+    { "id": 2, "name":  "sum_2_int" },
+    { "id": 3, "name":  "console_int" }
+  ],
   "blocks": [
-    { "block_id": 1, "block_type": "const_int", "input_count": 0, "output_count": 1 },
-    { "block_id": 2, "block_type": "const_int", "input_count": 0, "output_count": 1 },
-    { "block_id": 3, "block_type": "sum_2_int", "input_count": 2, "output_count": 1 },
-    { "block_id": 4, "block_type": "console_int", "input_count": 1, "output_count": 0 }
+    { "block_id": 1, "block_type_id": 1, "input_count": 0, "output_count": 1 },
+    { "block_id": 2, "block_type_id": 1, "input_count": 0, "output_count": 1 },
+    { "block_id": 3, "block_type_id": 2, "input_count": 2, "output_count": 1 },
+    { "block_id": 4, "block_type_id": 3, "input_count": 1, "output_count": 0 }
   ],
   "links": [
     { "block_out_id": 1, "bus_out_idx": 0, "block_in_id": 3, "bus_in_idx": 0, "type_id": 1 },

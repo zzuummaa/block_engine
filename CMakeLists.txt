@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 add_library(block_engine
-        src/link_logic.cpp
+    src/link_logic.cpp
     src/connector.cpp
-        include/blocks/const_block.h include/blocks/console_block.h)
+    src/sheme.cpp)
 
 target_include_directories(block_engine PUBLIC include)
 target_link_libraries(block_engine PUBLIC nlohmann_json::nlohmann_json)
