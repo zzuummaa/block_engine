@@ -27,16 +27,16 @@ namespace graph {
             return scheme.blocks.end();
         }
 
-        static auto linkedNodesBegin(const model::Scheme& scheme, const TBlockKey& id) {
+        static auto linksBegin(const model::Scheme& scheme, const TBlockKey& id) {
             return scheme.links.lower_bound({ .block_out_id = id });
         }
 
-        static auto linkedNodesEnd(const model::Scheme& scheme, const TBlockKey& id) {
-            return scheme.links.upper_bound({ .block_out_id = id });
+        static auto linksEnd(const model::Scheme& scheme, const TBlockKey& id) {
+            return scheme.links.lower_bound({ .block_out_id = id + 1 });
         }
 
         static TBlockKey blockKey(const model::Link& link) {
-            return link.block_out_id;
+            return link.block_in_id;
         }
 
         static TBlockKey blockKey(const std::pair<TBlockKey, model::Block>& pair) {
@@ -52,7 +52,7 @@ namespace graph {
 
         if (!is_visit.emplace(blockKey).second) return;
 
-        for (auto it = TExtractorPolicy::linkedNodesBegin(scheme, blockKey); it != TExtractorPolicy::linkedNodesEnd(scheme, blockKey); it++) {
+        for (auto it = TExtractorPolicy::linksBegin(scheme, blockKey); it != TExtractorPolicy::linksEnd(scheme, blockKey); it++) {
             dfs<TScheme, TExtractorPolicy>(TExtractorPolicy::blockKey(*it), scheme, is_visit, sequence);
         }
 
@@ -72,6 +72,7 @@ namespace graph {
             dfs<TScheme, TExtractorPolicy>(TExtractorPolicy::blockKey(*it), scheme, is_visit, sequence);
         }
 
+        std::reverse(sequence.begin(), sequence.end());
         return sequence;
     }
 
