@@ -5,30 +5,42 @@
 #ifndef BLOCK_ENGINE_TYPE_INFO_H
 #define BLOCK_ENGINE_TYPE_INFO_H
 
+#include <cassert>
 #include <typeinfo.h>
 
 class TypeInfo {
-    const std::type_info& info;
+    const std::type_info* info;
     std::size_t size_;
 public:
 
-    TypeInfo(const std::type_info &info, size_t size) : info(info), size_(size) {}
-    TypeInfo(const TypeInfo&) = default;
+    TypeInfo() = default;
+    TypeInfo(const std::type_info &info, size_t size) : info(&info), size_(size) {}
+    TypeInfo(const TypeInfo& other) = default;
+
+    TypeInfo& operator=(const TypeInfo& other) = default;
+
+    explicit operator bool() const {
+        return info != nullptr;
+    }
 
     [[nodiscard]] const char* name() const {
-        return info.name();
+        assert(*this);
+        return info->name();
     }
 
     [[nodiscard]] size_t size() const {
+        assert(*this);
         return size_;
     }
 
     [[nodiscard]] size_t hash_code() const {
-        return info.hash_code();
+        assert(*this);
+        return info->hash_code();
     }
 
     [[nodiscard]] const std::type_info& native_type_info() const {
-        return info;
+        assert(*this);
+        return *info;
     }
 };
 

@@ -10,28 +10,23 @@
 template<typename OutType>
 class ConstBlock : public IBlock {
     OutType value;
+    Ref<OutType> output;
 public:
 
     explicit ConstBlock(const OutType& value) : value(value) {}
 
     bool calc() override {
+        output.get() = value;
         return true;
     }
 
-    void connectInputs(Connector &connector) override { }
+    void connectInputs(Connector &connector) override {
+        if (connector.count() != 0) throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
 
     void connectOutputs(Connector &connector) override {
-        auto& busses = connector.getBusses();
-        busses[0].data_unchecked<OutType>() = value;
-    }
-
-    bool validateInputs(const Connector &connector) override {
-        return connector.getBusses().empty();
-    }
-
-    bool validateOutputs(const Connector &connector) override {
-        // TODO check buss type
-        return connector.getBusses().size() == 1;
+        if (connector.count() != 1) throw std::runtime_error(__PRETTY_FUNCTION__);
+        output = connector.getBus(0).data<OutType>();
     }
 };
 

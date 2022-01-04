@@ -6,28 +6,21 @@
 
 template<typename InType>
 class ConsoleBlock : public IBlock {
-    InType* input;
+    Ref<InType> input;
 public:
 
     bool calc() override {
-        std::cout << *input;
+        std::cout << input.get();
         return true;
     }
 
     void connectInputs(Connector &connector) override {
-        input = &connector.getBusses()[0].data_unchecked<int>();
+        if (connector.count() != 1) throw std::runtime_error(__PRETTY_FUNCTION__);
+        input = connector.getBus(0).data<int>();
     }
 
     void connectOutputs(Connector &connector) override { }
 
-    bool validateInputs(const Connector &connector) override {
-        // TODO check buss type
-        return connector.getBusses().size() == 1;
-    }
-
-    bool validateOutputs(const Connector &connector) override {
-        return true;
-    }
 };
 
 #endif //BLOCK_ENGINE_CONSOLE_BLOCK_H

@@ -50,11 +50,11 @@ namespace model {
         std::set<Link, LinkLess> links;
 
         bool addType(int type_id, const std::string& type);
-        std::optional<std::string> getType(int type_id);
+        [[nodiscard]] std::optional<std::string> getType(int type_id) const;
         bool addBlockType(int block_id, const std::string& block_type);
-        std::optional<std::string> getBlockType(int block_type_id);
+        [[nodiscard]] std::optional<std::string> getBlockType(int block_type_id) const;
         bool addBlock(int block_id, const Block& block);
-        std::optional<Block> getBlock(int block_id);
+        [[nodiscard]] std::optional<Block> getBlock(int block_id) const;
         bool addLink(const Link& link);
     };
 

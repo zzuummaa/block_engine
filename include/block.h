@@ -1,17 +1,34 @@
 #ifndef MODERN_CPP_DESIGN_BLOCK_H
 #define MODERN_CPP_DESIGN_BLOCK_H
 
+#include <functional>
 #include <tuple>
 #include <typeinfo>
 #include "connector.h"
 
+template<typename Tp>
+class Ref {
+    Tp* data;
+public:
+
+    Ref() : data(nullptr) { }
+
+    template<typename TRef>
+    Ref(TRef&& ref) : data(std::addressof(std::forward<TRef>(ref))) { }
+
+    Tp& get() const {
+        return *data;
+    }
+
+    Ref& operator=(const Ref&) = default;
+};
+
 class IBlock {
 public:
+    virtual ~IBlock() = default;
     virtual bool calc() = 0;
     virtual void connectInputs(Connector&) = 0;
     virtual void connectOutputs(Connector&) = 0;
-    virtual bool validateInputs(const Connector&) = 0;
-    virtual bool validateOutputs(const Connector&) = 0;
 };
 
 class IBlockFactory {

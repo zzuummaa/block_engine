@@ -10,35 +10,27 @@
 
 template<typename OperandType>
 class SumBlock : public IBlock {
-    std::vector<OperandType*> inputs;
-    OperandType* output;
+    std::vector<Ref<OperandType>> inputs;
+    Ref<OperandType> output;
 
 public:
 
     bool calc() override {
-        std::accumulate(inputs.begin(), inputs.end(), 0, [](auto a, auto* b){ return a + *b; });
+        output.get() = std::accumulate(inputs.begin(), inputs.end(), 0, [](auto& a, auto& b){ return a + b.get(); });
         return true;
     }
 
     void connectInputs(Connector &connector) override {
-        auto& busses = connector.getBusses();
-        inputs.resize(busses.size());
-        for (size_t i = 0; i < busses.size(); i++) {
-            auto& bus = busses[i];
-            inputs[i] = &bus.data_unchecked<int>();
+        inputs.resize(connector.count());
+        for (size_t i = 0; i < connector.count(); i++) {
+            auto& bus = connector.getBus(i);
+            inputs[i] = bus.data<int>();
         }
     }
 
     void connectOutputs(Connector &connector) override {
-        output = &connector.getBusses()[0].data_unchecked<OperandType>();
-    }
-
-    bool validateInputs(const Connector &connector) override {
-        return true;
-    }
-
-    bool validateOutputs(const Connector &connector) override {
-        return connector.getBusses().size() == 1;
+        if (connector.count() != 1) throw std::runtime_error(__PRETTY_FUNCTION__);
+        output = connector.getBus(0).data<OperandType>();
     }
 };
 
