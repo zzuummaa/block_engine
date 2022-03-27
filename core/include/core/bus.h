@@ -20,7 +20,7 @@ struct Bus {
     Bus(const Bus& other) = default;
 
     template<typename TDataType>
-    explicit Bus(const TDataType& value) : type_info(typeid(value), sizeof(value)), data_(sizeof(value)) {
+    explicit Bus(const TDataType& value) : type_info(make_type_info<TDataType>()), data_(sizeof(value)) {
         *reinterpret_cast<TDataType*>(data_.data()) = value;
         destroyer = [this](){
             auto& data_value = data_unchecked<TDataType>();
@@ -41,7 +41,7 @@ struct Bus {
 
     template<typename TDataType>
     TDataType& data() {
-        if (type_info.native_type_info() != typeid(TDataType)) throw std::runtime_error(__PRETTY_FUNCTION__);
+        if (type_info != make_type_info<TDataType>()) throw std::runtime_error(__PRETTY_FUNCTION__);
         return data_unchecked<TDataType>();
     }
 };

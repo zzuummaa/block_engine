@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
-#include "type_info.h"
-#include "block.h"
+#include "../core/include/core/type_info.h"
+#include "../core/include/core/block.h"
 #include "storage.h"
 
 class LinkLogic {
 public:
-    typedef std::shared_ptr<IBlock> IBlockPtr;
+    typedef std::shared_ptr<IBlockLogic> IBlockPtr;
 
     void addBlock(int block_id, IBlockPtr block, int inputs_count, int outputs_count);
     void addLink(int block_out_id, int bus_out_idx, int block_in_id, int bus_in_idx, const TypeInfo& info);

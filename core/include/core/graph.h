@@ -13,33 +13,33 @@
 namespace graph {
 
     struct DefaultSchemeExtractorPolicy {
-        typedef decltype(model::Scheme().blocks)::key_type TBlockKey;
+        typedef decltype(block_engine::model::Scheme().blocks)::key_type TBlockKey;
 
-        static size_t blocksCount(const model::Scheme& scheme) {
+        static size_t blocksCount(const block_engine::model::Scheme& scheme) {
             return scheme.blocks.size();
         }
 
-        static auto blocksBegin(const model::Scheme& scheme) {
+        static auto blocksBegin(const block_engine::model::Scheme& scheme) {
             return scheme.blocks.begin();
         }
 
-        static auto blocksEnd(const model::Scheme& scheme) {
+        static auto blocksEnd(const block_engine::model::Scheme& scheme) {
             return scheme.blocks.end();
         }
 
-        static auto linksBegin(const model::Scheme& scheme, const TBlockKey& id) {
+        static auto linksBegin(const block_engine::model::Scheme& scheme, const TBlockKey& id) {
             return scheme.links.lower_bound({ .block_out_id = id });
         }
 
-        static auto linksEnd(const model::Scheme& scheme, const TBlockKey& id) {
+        static auto linksEnd(const block_engine::model::Scheme& scheme, const TBlockKey& id) {
             return scheme.links.lower_bound({ .block_out_id = id + 1 });
         }
 
-        static TBlockKey blockKey(const model::Link& link) {
+        static TBlockKey blockKey(const block_engine::model::Link& link) {
             return link.block_in_id;
         }
 
-        static TBlockKey blockKey(const std::pair<TBlockKey, model::Block>& pair) {
+        static TBlockKey blockKey(const std::pair<TBlockKey, block_engine::model::Block>& pair) {
             return pair.first;
         }
     };

@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+class Parser
+class Presenter
+
+class SchemeRepresentationHolder {
+    shared_ptr<vector<Block>>
+}
+
+Parser -> Presenter: model::Scheme
+Presenter -> SchemeRepresentationHolder: shared_ptr<vector<Block>>
+SchemeRepresentationHolder -> BlockManagementLogic
+SchemeRepresentationHolder -> CalculationEngine
+
+@enduml

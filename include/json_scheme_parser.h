@@ -16,8 +16,10 @@ class JsonSchemeParser {
 public:
     explicit JsonSchemeParser(std::istream &is) : json_object(nlohmann::json::parse(is)) {}
 
-    model::Scheme parse() {
-        model::Scheme scheme;
+    block_engine::model::Scheme parse() {
+        using namespace block_engine::model;
+
+        Scheme scheme;
 
         for (auto& json_type : json_object.at("types")) {
             auto id = json_type["id"].get<int>();
@@ -35,7 +37,7 @@ public:
 
         for (auto& json_block : json_object.at("blocks")) {
             auto id = json_block["block_id"].get<int>();
-            auto block = model::Block{
+            auto block = Block{
                 .block_type_id = json_block["block_type_id"].get<int>(),
                 .input_count = json_block["input_count"].get<int>(),
                 .output_count = json_block["output_count"].get<int>()
@@ -44,7 +46,7 @@ public:
         }
 
         for (auto& json_link : json_object.at("links")) {
-            auto link = model::Link{
+            auto link = Link{
                 .type_id = json_link["type_id"].get<int>(),
                 .block_out_id = json_link["block_out_id"].get<int>(),
                 .bus_out_idx = json_link["bus_out_idx"].get<int>(),

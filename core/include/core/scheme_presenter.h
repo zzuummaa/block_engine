@@ -2,12 +2,15 @@
 // Created by Stepan on 04.01.2022.
 //
 
-#ifndef BLOCK_ENGINE_BLOCK_CONNECTION_POLICY_H
-#define BLOCK_ENGINE_BLOCK_CONNECTION_POLICY_H
+#ifndef BLOCK_ENGINE_SCHEME_PRESENTER_H
+#define BLOCK_ENGINE_SCHEME_PRESENTER_H
 
 #include "model/scheme.h"
-#include "bus.h"
+#include "bus_factory.h"
 #include "connector.h"
+#include "block_factory.h"
+
+namespace block_engine::core {
 
 struct OutputPinLinkLess {
     bool operator()(const model::Link& lhs, const model::Link& rhs) const {
@@ -21,9 +24,10 @@ struct OutputPinLinkLess {
     }
 };
 
-template<typename TBusFactory>
 struct DefaultConnectionPolicy {
-    static auto connectors(const model::Scheme& scheme) {
+    explicit DefaultConnectionPolicy(const BusFactory& bus_factory) : bus_factory(bus_factory) {}
+
+    auto connectors(const model::Scheme& scheme) {
         std::map<int, std::pair<Connector, Connector>> conns;
 
         for (const auto& [id, block]: scheme.blocks) {
@@ -40,7 +44,7 @@ struct DefaultConnectionPolicy {
             if (it == unique_busses.end()) {
                 const auto& type = scheme.types.find(link.type_id);
                 if (type == scheme.types.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-                unique_busses.emplace(link, new Bus(TBusFactory::createBus(type->second)));
+                unique_busses.emplace(link, new Bus(bus_factory.createBusByName(type->second)));
             }
         }
 
@@ -60,26 +64,35 @@ struct DefaultConnectionPolicy {
 
         return conns;
     }
+
+private:
+    BusFactory bus_factory;
 };
 
-template<typename TBlockFactory>
 struct DefaultBlockPolicy {
-   static auto blocks(const model::Scheme& scheme) {
-        std::map<int, IBlock*> blocks;
+   explicit DefaultBlockPolicy(const BlockFactory& block_factory) : block_factory(block_factory) {}
+
+   auto blocks(const model::Scheme& scheme) {
+        std::map<int, IBlockLogic*> blocks;
         std::transform(
             scheme.blocks.begin(),
             scheme.blocks.end(),
             std::inserter(blocks, blocks.end()),
-            [&scheme](auto& it){
+            [&](auto& it){
                 return std::make_pair(
                     it.first,
-                    TBlockFactory::createBlockByName(*scheme.getBlockType(it.second.block_type_id))
+                    block_factory.createBlockByName(*scheme.getBlockType(it.second.block_type_id))
                 );
             }
         );
 
        return blocks;
    }
+
+private:
+    BlockFactory block_factory;
 };
 
-#endif //BLOCK_ENGINE_BLOCK_CONNECTION_POLICY_H
+}
+
+#endif //BLOCK_ENGINE_SCHEME_PRESENTER_H

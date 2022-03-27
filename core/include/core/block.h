@@ -23,23 +23,21 @@ public:
     Ref& operator=(const Ref&) = default;
 };
 
-class IBlock {
+class IBlockLogic {
 public:
-    virtual ~IBlock() = default;
+    virtual ~IBlockLogic() = default;
+    virtual bool start() { return true; }
     virtual bool calc() = 0;
+    virtual bool stop() { return true; }
     virtual void connectInputs(Connector&) = 0;
     virtual void connectOutputs(Connector&) = 0;
-};
-
-class IBlockFactory {
-    virtual IBlock* createBlockByName() = 0;
 };
 
 //template<
 //    typename InType,
 //    typename OutType
 //>
-//class BaseBlock : public IBlock {
+//class BaseBlock : public IBlockLogic {
 //public:
 //    typedef InType InCollectionType;
 //    typedef OutType OutCollectionType;

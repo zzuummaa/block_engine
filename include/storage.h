@@ -8,7 +8,7 @@
 #include <limits>
 #include <vector>
 #include <stdexcept>
-#include "type_info.h"
+#include "../core/include/core/type_info.h"
 
 class DataStorage;
 class StaticDataStorage;
@@ -64,12 +64,12 @@ public:
         return DataRef(new_back);
     }
 
-    template<typename DataType>
-    DataRef push_back(DataType&& data) {
-        auto info = TypeInfo(typeid(data), sizeof(DataType));
+    template<typename TDataType>
+    DataRef push_back(TDataType&& data) {
+        auto info = make_type_info<TDataType>();
         auto data_ref = alloc(info);
 
-        new (data_ref.data()) DataType(data);
+        new (data_ref.data()) TDataType(data);
 
         return data_ref;
     }

@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "../core/include/core/bus.h"
-#include "calc/blocks/block.h"
+#include "bus.h"
+#include "block.h"
 
 struct BlockManagementLogicSetup {
     

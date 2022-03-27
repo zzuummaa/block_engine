@@ -9,7 +9,7 @@
 
 class SchemeValidator {
 public:
-    bool validate(const model::Scheme& scheme) {
+    bool validate(const block_engine::model::Scheme& scheme) {
         return true;
     }
 };

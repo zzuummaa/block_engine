@@ -6,10 +6,10 @@
 #define MODERN_CPP_DESIGN_SUM_BLOCK_H
 
 #include <numeric>
-#include "block.h"
+#include "core/block.h"
 
 template<typename OperandType>
-class SumBlock : public IBlock {
+class SumBlockLogic : public IBlockLogic {
     std::vector<Ref<OperandType>> inputs;
     Ref<OperandType> output;
 

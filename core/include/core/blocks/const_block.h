@@ -5,15 +5,15 @@
 #ifndef BLOCK_ENGINE_CONST_BLOCK_H
 #define BLOCK_ENGINE_CONST_BLOCK_H
 
-#include "block.h"
+#include "core/block.h"
 
 template<typename OutType>
-class ConstBlock : public IBlock {
+class ConstBlockLogic : public IBlockLogic {
     OutType value;
     Ref<OutType> output;
 public:
 
-    explicit ConstBlock(const OutType& value) : value(value) {}
+    explicit ConstBlockLogic(const OutType& value) : value(value) {}
 
     bool calc() override {
         output.get() = value;

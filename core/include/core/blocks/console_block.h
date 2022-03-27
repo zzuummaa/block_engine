@@ -2,10 +2,10 @@
 #define BLOCK_ENGINE_CONSOLE_BLOCK_H
 
 #include <iostream>
-#include "block.h"
+#include "core/block.h"
 
 template<typename InType>
-class ConsoleBlock : public IBlock {
+class ConsoleBlockLogic : public IBlockLogic {
     Ref<InType> input;
 public:
 

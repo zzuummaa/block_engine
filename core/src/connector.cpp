@@ -1,4 +1,4 @@
-#include <connector.h>
+#include "core/connector.h"
 
 void Connector::connect(int index, const Connector::value_type& bus) {
     at(index);

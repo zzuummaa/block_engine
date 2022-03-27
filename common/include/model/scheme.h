@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-namespace model {
+namespace block_engine::model {
 
     struct Block {
         int block_type_id;
