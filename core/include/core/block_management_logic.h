@@ -15,7 +15,7 @@ namespace block_engine::core {
 
 class BlockManagementLogic {
 public:
-    typedef IBlockLogic* IBlockLogicPtr;
+    typedef BlockLogicBase* IBlockLogicPtr;
 
     void setBlocks(std::map<int, IBlockLogicPtr>&& blocks_) {
         this->blocks.swap(blocks_);
@@ -43,8 +43,8 @@ public:
         return blocks[id];
     }
 private:
-    std::map<int, std::pair<Connector, Connector>> connectors;
     std::map<int, IBlockLogicPtr> blocks;
+    std::map<int, std::pair<Connector, Connector>> connectors;
 
 };
 

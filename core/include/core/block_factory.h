@@ -14,7 +14,7 @@ namespace block_engine::core {
 
 class BlockFactory {
 public:
-    using TBlock = IBlockLogic*;
+    using TBlock = BlockLogicBase*;
     using TBlockFactoryMap = std::map<std::string, std::function<BlockFactory::TBlock()>>;
 
     explicit BlockFactory(const TBlockFactoryMap &map);

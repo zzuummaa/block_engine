@@ -9,54 +9,25 @@
 #include <set>
 #include <string>
 
+#include "block.h"
+#include "bus.h"
+
 namespace block_engine::model {
 
-    struct Block {
-        int block_type_id;
-        int input_count;
-        int output_count;
-    };
+struct Scheme {
+    std::map<int, std::string> types;
+    std::map<int, std::string> block_types;
+    std::map<int, Block> blocks;
+    std::set<Bus, BusLessByBlockId> busses;
 
-    struct Link {
-        int type_id;
-        int block_out_id;
-        int bus_out_idx;
-        int block_in_id;
-        int bus_in_idx;
-    };
-
-    struct LinkLess {
-        bool operator()(const Link& lhs, const Link& rhs) const {
-            if (lhs.block_out_id < rhs.block_out_id)
-                return true;
-            if (rhs.block_out_id < lhs.block_out_id)
-                return false;
-            if (lhs.bus_out_idx < rhs.bus_out_idx)
-                return true;
-            if (rhs.bus_out_idx < lhs.bus_out_idx)
-                return false;
-            if (lhs.block_in_id < rhs.block_in_id)
-                return true;
-            if (rhs.block_in_id < lhs.block_in_id)
-                return false;
-            return lhs.bus_in_idx < rhs.bus_in_idx;
-        }
-    };
-
-    struct Scheme {
-        std::map<int, std::string> types;
-        std::map<int, std::string> block_types;
-        std::map<int, Block> blocks;
-        std::set<Link, LinkLess> links;
-
-        bool addType(int type_id, const std::string& type);
-        [[nodiscard]] std::optional<std::string> getType(int type_id) const;
-        bool addBlockType(int block_id, const std::string& block_type);
-        [[nodiscard]] std::optional<std::string> getBlockType(int block_type_id) const;
-        bool addBlock(int block_id, const Block& block);
-        [[nodiscard]] std::optional<Block> getBlock(int block_id) const;
-        bool addLink(const Link& link);
-    };
+    bool addType(int type_id, const std::string& type);
+    [[nodiscard]] std::optional<std::string> getType(int type_id) const;
+    bool addBlockType(int block_id, const std::string& block_type);
+    [[nodiscard]] std::optional<std::string> getBlockType(int block_type_id) const;
+    bool addBlock(int block_id, const Block& block);
+    [[nodiscard]] std::optional<Block> getBlock(int block_id) const;
+    bool addBus(const Bus& link);
+};
 
 }
 

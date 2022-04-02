@@ -6,7 +6,7 @@ BusFactory::BusFactory(BusFactory::TBusFactoryMap map) : map(std::move(map)) {}
 
 Bus BusFactory::createBusByName(const std::string &name) {
     auto it = map.find(name);
-    return it != map.end() ? it->second() : Bus();
+    return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
 BusPtr BusFactory::createBusPtrByName(const std::string &name) {

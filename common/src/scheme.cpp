@@ -33,8 +33,8 @@ std::optional<Block> Scheme::getBlock(int block_id) const {
     return it != blocks.end() ? std::make_optional(it->second) : std::nullopt;
 }
 
-bool Scheme::addLink(const Link &link) {
-    return links.emplace(link).second;
+bool Scheme::addBus(const Bus &link) {
+    return busses.emplace(link).second;
 }
 
 }

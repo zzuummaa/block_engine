@@ -1,56 +1,43 @@
+//
+// Created by Stepan on 02.04.2022.
+//
+
 #ifndef BLOCK_ENGINE_CORE_H
 #define BLOCK_ENGINE_CORE_H
 
-#include <iostream>
-#include <iterator>
+#include <utility>
 
-#include "model/scheme.h"
-#include "bus_factory.h"
-#include "block_factory.h"
-#include "block_management_logic.h"
-#include "scheme_presenter.h"
-#include "graph.h"
+#include "core_api.h"
+#include "calc_engine.h"
+#include "execution_logic.h"
 
 namespace block_engine::core {
 
-class CalcEngine {
+class Core : public ICoreApiServerHandler {
 public:
-    explicit CalcEngine(const model::Scheme& scheme) {
-        block_management_logic.setBlocks(std::move(DefaultBlockPolicy(make_block_factory()).blocks(scheme)));
-        block_management_logic.setConnectors(std::move(DefaultConnectionPolicy(make_bus_factory()).connectors(scheme)));
-        block_management_logic.connectBlocks();
+    explicit Core(std::shared_ptr<ICoreApiServer> core_api_server) : core_api_server(std::move(core_api_server)) {}
 
-        calc_order = graph::topologySort(scheme);
-
-        std::transform(
-            calc_order.begin(),
-            calc_order.end(),
-            std::inserter(ordered_blocks, ordered_blocks.end()),
-            [&](int id){ return block_management_logic.getBlock(id); });
-
-        std::copy(calc_order.begin(), calc_order.end(), std::ostream_iterator<int>(std::cout, " "));
-        std::cout << std::endl;
+    void onSetScheme(const model::Scheme &scheme) override {
+        if (is_calcing) throw std::invalid_argument(__PRETTY_FUNCTION__);
+        calc_engine = std::make_shared<CalcEngine>(scheme, core_api_server);
     }
 
-    bool start() {
-        return true;
+    void onStartCalc() override {
+        if (!calc_engine) throw std::invalid_argument(__PRETTY_FUNCTION__);
+        execution_logic.start(calc_engine);
+        is_calcing = true;
     }
 
-    bool stop() {
-        return true;
-    }
-
-    bool process_step() {
-        return std::all_of(
-        ordered_blocks.begin(),
-        ordered_blocks.end(),
-        [&](BlockManagementLogic::IBlockLogicPtr& block){ return block->calc(); });
+    void onStopCalc() override {
+        execution_logic.stop();
+        is_calcing = false;
     }
 
 private:
-    BlockManagementLogic block_management_logic;
-    std::vector<int> calc_order;
-    std::vector<BlockManagementLogic::IBlockLogicPtr> ordered_blocks;
+    std::shared_ptr<ICoreApiServer> core_api_server;
+    std::shared_ptr<CalcEngine> calc_engine;
+    SingleSeparateThreadExecutionLogic execution_logic;
+    bool is_calcing{};
 };
 
 }

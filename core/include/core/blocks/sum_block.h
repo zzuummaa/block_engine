@@ -11,7 +11,7 @@
 namespace block_engine::core::blocks {
 
 template<typename OperandType>
-class SumBlockLogic : public IBlockLogic {
+class SumBlockLogic : public BlockLogicBase {
     std::vector<Ref<OperandType>> inputs;
     Ref<OperandType> output;
 

@@ -7,12 +7,12 @@
 namespace block_engine::core::blocks {
 
 template<typename InType>
-class ConsoleBlockLogic : public IBlockLogic {
+class ConsoleBlockLogic : public BlockLogicBase {
     Ref<InType> input;
 public:
 
     bool calc() override {
-        std::cout << input.get();
+        std::cout << input.get() << std::endl;
         return true;
     }
 
@@ -20,9 +20,6 @@ public:
         if (connector.count() != 1) throw std::runtime_error(__PRETTY_FUNCTION__);
         input = connector.getBus(0).data<int>();
     }
-
-    void connectOutputs(Connector &connector) override { }
-
 };
 
 }

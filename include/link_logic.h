@@ -14,7 +14,7 @@
 
 class LinkLogic {
 public:
-    typedef std::shared_ptr<block_engine::core::IBlockLogic> IBlockPtr;
+    typedef std::shared_ptr<block_engine::core::BlockLogicBase> IBlockPtr;
 
     void addBlock(int block_id, IBlockPtr block, int inputs_count, int outputs_count);
     void addLink(int block_out_id, int bus_out_idx, int block_in_id, int bus_in_idx, const TypeInfo& info);

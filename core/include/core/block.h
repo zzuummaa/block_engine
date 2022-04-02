@@ -5,7 +5,9 @@
 #include <tuple>
 #include <typeinfo>
 #include <utility>
+
 #include "connector.h"
+#include "model/block.h"
 
 namespace block_engine::core {
 
@@ -26,15 +28,22 @@ public:
     Ref& operator=(const Ref&) = default;
 };
 
-class IBlockLogic {
+class BlockLogicBase {
 public:
-    virtual ~IBlockLogic() = default;
+    model::Block block;
+
+    virtual ~BlockLogicBase() = default;
     virtual bool start() { return true; }
     virtual bool calc() = 0;
     virtual bool stop() { return true; }
-    virtual void connectInputs(Connector&) = 0;
-    virtual void connectOutputs(Connector&) = 0;
+    virtual void connectInputs(Connector&) { };
+    virtual void connectOutputs(Connector&) { };
     virtual void updateSettings() { }
+
+    void setBlock(const model::Block& block_) {
+        this->block = block_;
+        updateSettings();
+    }
 };
 
 }

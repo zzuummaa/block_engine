@@ -10,7 +10,7 @@
 namespace block_engine::core::blocks {
 
 template<typename OutType>
-class ConstBlockLogic : public IBlockLogic {
+class ConstBlockLogic : public BlockLogicBase {
     OutType value;
     Ref<OutType> output;
 public:

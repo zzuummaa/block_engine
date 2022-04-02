@@ -33,7 +33,7 @@ void LinkLogic::addLink(
 //    auto dataRef = storage.alloc(info);
 //
 //    in_connector.connect(bus_in_idx, Bus(dataRef.data()));
-//    out_connector.connect(bus_out_idx, Bus(dataRef.data()));
+//    out_connector.connect(src_bus_idx, Bus(dataRef.data()));
 }
 
 void LinkLogic::linkBlocks() {

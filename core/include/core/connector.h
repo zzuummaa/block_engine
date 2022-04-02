@@ -5,6 +5,7 @@
 #ifndef MODERN_CPP_DESIGN_CONNECTOR_H
 #define MODERN_CPP_DESIGN_CONNECTOR_H
 
+#include <utility>
 #include <vector>
 #include "bus.h"
 
@@ -38,19 +39,20 @@ struct Connector : private std::vector<BusPtr> {
     Connector& operator=(Connector&& connector) noexcept = default;
 
     [[nodiscard]] size_t count() const {
-        return Connector::size();
+        return size();
     }
 
     Bus& getBus(size_t n) {
-        return *Connector::at(n);
+        return *at(n);
     }
 
     [[nodiscard]] const TBus& getBus(size_t n) const {
-        return *Connector::at(n);
+        return *at(n);
     }
 
-    void setBus(size_t n, BusPtr bus) {
-        Connector::at(n) = bus;
+    void setBusIfEmptyOrError(size_t n, BusPtr bus) {
+        if (at(n)) throw std::invalid_argument(__PRETTY_FUNCTION__);
+        at(n) = std::move(bus);
     }
 };
 
