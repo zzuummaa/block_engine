@@ -8,6 +8,8 @@
 #include <numeric>
 #include "core/block.h"
 
+namespace block_engine::core::blocks {
+
 template<typename OperandType>
 class SumBlockLogic : public IBlockLogic {
     std::vector<Ref<OperandType>> inputs;
@@ -33,5 +35,7 @@ public:
         output = connector.getBus(0).data<OperandType>();
     }
 };
+
+}
 
 #endif //MODERN_CPP_DESIGN_SUM_BLOCK_H

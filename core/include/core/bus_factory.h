@@ -13,12 +13,13 @@ namespace block_engine::core {
 
 class BusFactory {
 public:
-    using TBus = Bus;
-    using TBusFactoryMap = std::map<std::string, std::function<Bus()>>;;
+    typedef std::map<std::string, std::function<Bus()>> TBusFactoryMap;
 
-    explicit BusFactory(const TBusFactoryMap &map);
+    explicit BusFactory(TBusFactoryMap map);
 
-    TBus createBusByName(const std::string& name);
+    Bus createBusByName(const std::string& name);
+
+    BusPtr createBusPtrByName(const std::string& name);
 
 private:
     TBusFactoryMap map;

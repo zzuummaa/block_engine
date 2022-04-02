@@ -11,9 +11,10 @@
 #include "../core/include/core/block.h"
 #include "storage.h"
 
+
 class LinkLogic {
 public:
-    typedef std::shared_ptr<IBlockLogic> IBlockPtr;
+    typedef std::shared_ptr<block_engine::core::IBlockLogic> IBlockPtr;
 
     void addBlock(int block_id, IBlockPtr block, int inputs_count, int outputs_count);
     void addLink(int block_out_id, int bus_out_idx, int block_in_id, int bus_in_idx, const TypeInfo& info);
@@ -22,8 +23,8 @@ public:
 private:
     struct BlockInfo {
         IBlockPtr block;
-        Connector input;
-        Connector output;
+        block_engine::core::Connector input;
+        block_engine::core::Connector output;
     };
 
     std::map<int, BlockInfo> blocks;

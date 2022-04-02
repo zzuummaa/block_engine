@@ -10,6 +10,8 @@
 #include "connector.h"
 #include "block_factory.h"
 
+#include <memory>
+
 namespace block_engine::core {
 
 struct OutputPinLinkLess {
@@ -25,41 +27,50 @@ struct OutputPinLinkLess {
 };
 
 struct DefaultConnectionPolicy {
-    explicit DefaultConnectionPolicy(const BusFactory& bus_factory) : bus_factory(bus_factory) {}
+    typedef Connector TConnector;
+
+    explicit DefaultConnectionPolicy(BusFactory bus_factory) : bus_factory(std::move(bus_factory)) {}
+
+    auto makeLinkBusMapping(const model::Scheme& scheme) {
+        std::map<model::Link, BusPtr, OutputPinLinkLess> link_bus_mapping;
+
+        for (const auto& link: scheme.links) {
+            auto it = link_bus_mapping.find(link);
+            if (it != link_bus_mapping.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
+
+            const auto& type = scheme.types.find(link.type_id);
+            if (type == scheme.types.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
+            link_bus_mapping.emplace(link, bus_factory.createBusPtrByName(type->second));
+        }
+
+        return link_bus_mapping;
+    }
 
     auto connectors(const model::Scheme& scheme) {
-        std::map<int, std::pair<Connector, Connector>> conns;
+        std::map<int, std::pair<TConnector, TConnector>> conns;
 
         for (const auto& [id, block]: scheme.blocks) {
             const auto& [_, is_ok] = conns.emplace(
                 std::remove_const<typeof(id)>::type(id),
-                std::make_pair(Connector(block.input_count), Connector(block.output_count))
+                std::make_pair(TConnector(block.input_count), TConnector(block.output_count))
             );
             if (!is_ok) throw std::runtime_error(__PRETTY_FUNCTION__);
         }
 
-        std::map<model::Link, Bus*, OutputPinLinkLess> unique_busses;
-        for (const auto& link: scheme.links) {
-            auto it = unique_busses.find(link);
-            if (it == unique_busses.end()) {
-                const auto& type = scheme.types.find(link.type_id);
-                if (type == scheme.types.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-                unique_busses.emplace(link, new Bus(bus_factory.createBusByName(type->second)));
-            }
-        }
+        auto link_bus_mapping = makeLinkBusMapping(scheme);
 
         for (const auto& link: scheme.links) {
             auto in_block_it = conns.find(link.block_in_id);
             if (in_block_it == conns.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-            auto& in_connector = Connector::input(in_block_it->second);
+            auto& in_connector = TConnector::input(in_block_it->second);
 
-            in_connector.setBus(link.bus_in_idx, unique_busses[link]);
+            in_connector.setBus(link.bus_in_idx, link_bus_mapping[link]);
 
             auto out_block_it = conns.find(link.block_out_id);
             if (out_block_it == conns.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-            auto& out_connector = Connector::output(out_block_it->second);
+            auto& out_connector = TConnector::output(out_block_it->second);
 
-            out_connector.setBus(link.bus_out_idx, unique_busses[link]);
+            out_connector.setBus(link.bus_out_idx, link_bus_mapping[link]);
         }
 
         return conns;
@@ -70,7 +81,7 @@ private:
 };
 
 struct DefaultBlockPolicy {
-   explicit DefaultBlockPolicy(const BlockFactory& block_factory) : block_factory(block_factory) {}
+   explicit DefaultBlockPolicy(BlockFactory block_factory) : block_factory(std::move(block_factory)) {}
 
    auto blocks(const model::Scheme& scheme) {
         std::map<int, IBlockLogic*> blocks;

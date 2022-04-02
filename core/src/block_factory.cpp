@@ -5,6 +5,7 @@
 #include "core/blocks/sum_block.h"
 
 using namespace block_engine::core;
+using namespace block_engine::core::blocks;
 
 BlockFactory::TBlock BlockFactory::createBlockByName(const std::string &name) {
     auto it = map.find(name);

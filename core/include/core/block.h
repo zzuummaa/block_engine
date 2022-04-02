@@ -4,7 +4,10 @@
 #include <functional>
 #include <tuple>
 #include <typeinfo>
+#include <utility>
 #include "connector.h"
+
+namespace block_engine::core {
 
 template<typename Tp>
 class Ref {
@@ -31,7 +34,10 @@ public:
     virtual bool stop() { return true; }
     virtual void connectInputs(Connector&) = 0;
     virtual void connectOutputs(Connector&) = 0;
+    virtual void updateSettings() { }
 };
+
+}
 
 //template<
 //    typename InType,

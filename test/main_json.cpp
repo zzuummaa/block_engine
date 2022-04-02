@@ -2,8 +2,8 @@
 #include <fstream>
 #include <iostream>
 
-#include <json_scheme_parser.h>
-#include <scheme_validator.h>
+#include "view/json/json_scheme_parser.h"
+#include "validators/scheme_validator.h"
 
 #include <core/core.h>
 

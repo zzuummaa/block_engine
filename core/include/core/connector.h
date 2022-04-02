@@ -8,8 +8,10 @@
 #include <vector>
 #include "bus.h"
 
-struct Connector : private std::vector<Bus*> {
-public:
+namespace block_engine::core {
+
+struct Connector : private std::vector<BusPtr> {
+    typedef typename BusPtr::element_type TBus;
 
     static const Connector& input(const std::pair<Connector, Connector>& pair) {
         return pair.first;
@@ -30,20 +32,28 @@ public:
     Connector() = default;
     Connector(Connector&& other) = default;
 
-    explicit Connector(unsigned long long int count) : vector(count) {}
+    explicit Connector(unsigned long long int count) : std::vector<BusPtr>(count) {}
 
     Connector& operator=(const Connector& connector) = default;
     Connector& operator=(Connector&& connector) noexcept = default;
 
-    void connect(int index, const Connector::value_type& bus);
+    [[nodiscard]] size_t count() const {
+        return Connector::size();
+    }
 
-    [[nodiscard]] size_type count() const;
+    Bus& getBus(size_t n) {
+        return *Connector::at(n);
+    }
 
-    Bus& getBus(size_type n);
+    [[nodiscard]] const TBus& getBus(size_t n) const {
+        return *Connector::at(n);
+    }
 
-    [[nodiscard]] const Bus& getBus(size_type n) const;
-
-    void setBus(size_type n, Bus*);
+    void setBus(size_t n, BusPtr bus) {
+        Connector::at(n) = bus;
+    }
 };
+
+}
 
 #endif //MODERN_CPP_DESIGN_CONNECTOR_H

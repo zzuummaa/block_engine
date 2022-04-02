@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <vector>
 #include <functional>
+#include <memory>
 
 #include "type_info.h"
 
@@ -18,6 +19,7 @@ struct Bus {
 
     Bus() = default;
     Bus(const Bus& other) = default;
+    Bus(Bus&&) = default;
 
     template<typename TDataType>
     explicit Bus(const TDataType& value) : type_info(make_type_info<TDataType>()), data_(sizeof(value)) {
@@ -45,5 +47,14 @@ struct Bus {
         return data_unchecked<TDataType>();
     }
 };
+
+namespace block_engine::core {
+    typedef std::shared_ptr<Bus> BusPtr;
+
+    template<typename... Args>
+    BusPtr makeBusPtr(Args&&... args) {
+        return std::make_shared<Bus>(std::forward<Args>(args)...);
+    }
+}
 
 #endif //MODERN_CPP_DESIGN_BUS_H

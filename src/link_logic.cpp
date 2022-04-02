@@ -5,6 +5,8 @@
 #include "link_logic.h"
 #include <stdexcept>
 
+using namespace block_engine::core;
+
 void LinkLogic::addBlock(int block_id, IBlockPtr block, int inputs_count, int outputs_count) {
     auto it = blocks.find(block_id);
     if (it != blocks.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);

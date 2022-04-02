@@ -4,6 +4,8 @@
 #include <iostream>
 #include "core/block.h"
 
+namespace block_engine::core::blocks {
+
 template<typename InType>
 class ConsoleBlockLogic : public IBlockLogic {
     Ref<InType> input;
@@ -22,5 +24,7 @@ public:
     void connectOutputs(Connector &connector) override { }
 
 };
+
+}
 
 #endif //BLOCK_ENGINE_CONSOLE_BLOCK_H

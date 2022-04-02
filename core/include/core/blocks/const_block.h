@@ -7,6 +7,8 @@
 
 #include "core/block.h"
 
+namespace block_engine::core::blocks {
+
 template<typename OutType>
 class ConstBlockLogic : public IBlockLogic {
     OutType value;
@@ -29,5 +31,7 @@ public:
         output = connector.getBus(0).data<OutType>();
     }
 };
+
+}
 
 #endif //BLOCK_ENGINE_CONST_BLOCK_H

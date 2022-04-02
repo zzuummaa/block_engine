@@ -22,6 +22,12 @@ public:
 
         calc_order = graph::topologySort(scheme);
 
+        std::transform(
+            calc_order.begin(),
+            calc_order.end(),
+            std::inserter(ordered_blocks, ordered_blocks.end()),
+            [&](int id){ return block_management_logic.getBlock(id); });
+
         std::copy(calc_order.begin(), calc_order.end(), std::ostream_iterator<int>(std::cout, " "));
         std::cout << std::endl;
     }
@@ -36,14 +42,15 @@ public:
 
     bool process_step() {
         return std::all_of(
-        calc_order.begin(),
-        calc_order.end(),
-        [&](int id){ return block_management_logic.getBlock(id)->calc(); });
+        ordered_blocks.begin(),
+        ordered_blocks.end(),
+        [&](BlockManagementLogic::IBlockLogicPtr& block){ return block->calc(); });
     }
 
 private:
     BlockManagementLogic block_management_logic;
     std::vector<int> calc_order;
+    std::vector<BlockManagementLogic::IBlockLogicPtr> ordered_blocks;
 };
 
 }

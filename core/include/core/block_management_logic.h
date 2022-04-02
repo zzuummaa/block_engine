@@ -11,9 +11,7 @@
 #include "bus.h"
 #include "block.h"
 
-struct BlockManagementLogicSetup {
-    
-};
+namespace block_engine::core {
 
 class BlockManagementLogic {
 public:
@@ -49,5 +47,7 @@ private:
     std::map<int, IBlockLogicPtr> blocks;
 
 };
+
+}
 
 #endif //BLOCK_ENGINE_BLOCK_MANAGEMENT_LOGIC_H
