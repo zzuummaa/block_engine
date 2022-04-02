@@ -16,10 +16,16 @@
     { "block_id": 5, "block_type_id": 4, "input_count": 1, "output_count": 0 }
   ],
   "busses": [
-    { "type_id": 1, "src_block_id": 1, "src_pin_idx": 0, "dest_pins": [ {"block_id": 3, "pin_idx": 0} ] },
-    { "type_id": 1, "src_block_id": 2, "src_pin_idx": 0, "dest_pins": [ {"block_id": 3, "pin_idx": 1} ] },
-    { "type_id": 1, "src_block_id": 3, "src_pin_idx": 0, "dest_pins": [ {"block_id": 4, "pin_idx": 0} ] },
-    { "type_id": 1, "src_block_id": 3, "src_pin_idx": 0, "dest_pins": [ {"block_id": 5, "pin_idx": 0} ] }
+    { "type_id": 1, "src_block_id": 1, "src_pin_idx": 0, "dest_pins": [
+      {"block_id": 3, "pin_idx": 0}
+    ] },
+    { "type_id": 1, "src_block_id": 2, "src_pin_idx": 0, "dest_pins": [
+      {"block_id": 3, "pin_idx": 1}
+    ] },
+    { "type_id": 1, "src_block_id": 3, "src_pin_idx": 0, "dest_pins": [
+      {"block_id": 4, "pin_idx": 0},
+      {"block_id": 5, "pin_idx": 0}
+    ] }
   ],
   "links": [
     { "block_out_id": 1, "bus_out_idx": 0, "block_in_id": 3, "bus_in_idx": 0, "type_id": 1 },

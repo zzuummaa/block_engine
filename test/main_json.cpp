@@ -26,7 +26,11 @@ struct CoutCoreApiServer : public ICoreApiServer {
 };
 
 int main() {
-    std::fstream fs("test.json");
+    std::ifstream fs("test.json");
+	if (!fs.good()) {
+		throw std::system_error(errno, std::generic_category(), __PRETTY_FUNCTION__);
+	}
+
     auto scheme = block_engine::view::json::JsonSchemeParser(fs).parse();
     if (!SchemeValidator().validate(scheme)) throw std::runtime_error(__PRETTY_FUNCTION__);
 
@@ -36,6 +40,8 @@ int main() {
     core.onStartCalc();
 
     while (!*is_end) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    core.onStopCalc();
 
     return 0;
 }

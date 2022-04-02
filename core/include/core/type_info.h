@@ -6,16 +6,16 @@
 #define BLOCK_ENGINE_TYPE_INFO_H
 
 #include <cassert>
-#include <typeinfo.h>
 #include <string>
 
 class TypeInfo {
     const char* name_{};
     std::size_t hash_code_{};
     std::size_t type_size{};
+
+	TypeInfo() = default;
 public:
 
-    TypeInfo() = default;
     TypeInfo(const TypeInfo& other) = default;
 
 //    template<typename TData>

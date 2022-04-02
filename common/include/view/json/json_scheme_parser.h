@@ -63,7 +63,7 @@ public:
         for (auto& dest_pin: json_bus.at("dest_pins")) {
             auto pin = model::Pin{
                 .block_id = dest_pin["block_id"].get<int>(),
-                .pin_idx = dest_pin[""].get<int>()
+                .pin_idx = dest_pin["pin_idx"].get<int>()
             };
             bus.dests.push_back(pin);
         }
