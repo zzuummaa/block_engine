@@ -17,7 +17,6 @@ struct Bus {
     std::vector<char> data_;
     std::function<void()> destroyer;
 
-    Bus() = default;
     Bus(const Bus& other) = default;
     Bus(Bus&&) = default;
 
