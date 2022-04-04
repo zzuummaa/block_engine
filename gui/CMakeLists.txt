@@ -1,17 +1,23 @@
+project(${CMAKE_PROJECT_NAME}_gui)
+
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable(${CMAKE_PROJECT_NAME}_gui
+add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/block_type_info.cpp
+    src/block_factory.cpp
     src/qblockenginewindow.cpp
     src/qblockenginewindow.ui
     src/qschemeeditor.cpp
+    src/qblock.cpp
     include/qblockenginewindow.h
     include/qschemeeditor.h
+    include/qblock.h
 )
 
-target_include_directories(${CMAKE_PROJECT_NAME}_gui PUBLIC include)
-target_link_libraries(${CMAKE_PROJECT_NAME}_gui Qt5::Widgets core)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets ${CMAKE_PROJECT_NAME}_core)

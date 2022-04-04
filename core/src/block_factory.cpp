@@ -17,7 +17,7 @@ BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap &map) : map(map)
 
 template <typename TBlock, typename ...TArgs>
 auto make_block_initializer(const std::string& block_name, TArgs ...args) {
-    return std::make_pair(block_name, [=](){ return new TBlock(args...); });
+    return std::make_pair(block_name, [=]() { return MakeBlockLogicBasePtr<TBlock>(args...); });
 }
 
 BlockFactory block_engine::core::make_block_factory() {

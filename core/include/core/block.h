@@ -46,6 +46,14 @@ public:
     }
 };
 
+typedef std::shared_ptr<BlockLogicBase> BlockLogicBasePtr;
+
+template <typename Tp, typename... Args>
+BlockLogicBasePtr MakeBlockLogicBasePtr(Args&&... args) {
+    std::shared_ptr<BlockLogicBase> base(new Tp(std::forward<Args>(args)...));
+    return base;
+}
+
 }
 
 //template<

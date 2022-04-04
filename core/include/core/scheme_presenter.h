@@ -74,7 +74,7 @@ struct DefaultBlockPolicy {
    explicit DefaultBlockPolicy(BlockFactory block_factory) : block_factory(std::move(block_factory)) {}
 
    auto blocks(const model::Scheme& scheme) {
-        std::map<int, BlockLogicBase*> blocks;
+        std::map<int, BlockLogicBasePtr> blocks;
         std::transform(
             scheme.blocks.begin(),
             scheme.blocks.end(),

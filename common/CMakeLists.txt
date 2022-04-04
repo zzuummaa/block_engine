@@ -1,7 +1,10 @@
 project(${CMAKE_PROJECT_NAME}_common)
 
-add_library(${PROJECT_NAME}
-        src/scheme.cpp
-        src/bus.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
+set(BLOCK_ENGINE_COMMON_LIBRARY ${PROJECT_NAME} CACHE STRING "")
+
+add_library(${BLOCK_ENGINE_COMMON_LIBRARY}
+    src/scheme.cpp
+    src/bus.cpp
+)
+target_include_directories(${BLOCK_ENGINE_COMMON_LIBRARY} PUBLIC include)
+target_link_libraries(${BLOCK_ENGINE_COMMON_LIBRARY} PUBLIC nlohmann_json::nlohmann_json)

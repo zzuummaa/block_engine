@@ -46,7 +46,7 @@ public:
 private:
     BlockManagementLogic block_management_logic;
     std::vector<int> calc_order;
-    std::vector<BlockManagementLogic::IBlockLogicPtr> ordered_block_logics;
+    std::vector<BlockLogicBasePtr> ordered_block_logics;
     std::shared_ptr<ICoreApiServer> core_api_server;
 
     void setScheme(const model::Scheme& scheme) {
