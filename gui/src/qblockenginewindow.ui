@@ -38,22 +38,18 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
+      </property>
       <widget class="QListWidget" name="block_list">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QSchemeEditor" name="scheme_editor" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
+      <widget class="QSchemeEditor" name="scheme_editor"/>
      </widget>
     </item>
    </layout>
@@ -103,9 +99,8 @@
  <customwidgets>
   <customwidget>
    <class>QSchemeEditor</class>
-   <extends>QWidget</extends>
+   <extends>QGraphicsView</extends>
    <header>qschemeeditor.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

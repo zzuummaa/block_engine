@@ -1,12 +1,12 @@
 #ifndef BLOCK_ENGINE_QSCHEMEEDITOR_H
 #define BLOCK_ENGINE_QSCHEMEEDITOR_H
 
-#include <QWidget>
+#include <QGraphicsView>
 
-class QSchemeEditor : public QWidget {
+class QSchemeEditor : public QGraphicsView  {
     Q_OBJECT
 public:
-    explicit QSchemeEditor(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit QSchemeEditor(QWidget* parent = nullptr);
 };
 
 #endif //BLOCK_ENGINE_QSCHEMEEDITOR_H
