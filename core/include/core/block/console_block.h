@@ -3,7 +3,7 @@
 #include <iostream>
 #include "block.h"
 
-namespace block_engine::core::block {
+namespace block_engine::core {
 
 template<typename TInType>
 class ConsoleBlockLogic : public BlockLogicBase {

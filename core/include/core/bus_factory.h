@@ -25,7 +25,8 @@ private:
     TBusFactoryMap map;
 };
 
-BusFactory make_bus_factory();
+BusFactory makeBusFactory();
+
 }
 
 #endif //BLOCK_ENGINE_BUS_FACTORY_H

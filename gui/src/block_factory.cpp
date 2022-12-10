@@ -1,8 +1,9 @@
 #include "block_factory.h"
 
 #include <block/block_description.h>
-#include <block/bus_types.h>
+#include "bus_types.h"
 
+using namespace block_engine;
 using namespace block_engine::block;
 
 BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
@@ -37,12 +38,14 @@ public:
             factory_map.insert(make_block_initializer<TBlock>(name, args...));
         };
 
-        std::apply([&type_visitor](auto&& ... args) { (type_visitor(args), ...); }, typename TDescription::TInstances());
+        std::apply([&type_visitor](auto&& ... args) { (type_visitor(args), ...); },
+                   typename TDescription::TInstances());
     }
 
     BlockFactory build() {
         return BlockFactory(std::move(factory_map));
     }
+
 private:
     BlockFactory::TBlockFactoryMap factory_map;
 };

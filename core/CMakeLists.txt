@@ -3,6 +3,7 @@ project(${CMAKE_PROJECT_NAME}_core)
 set(BLOCK_ENGINE_CORE_LIBRARY ${PROJECT_NAME} CACHE STRING "")
 
 add_library(${BLOCK_ENGINE_CORE_LIBRARY}
+    src/block.cpp
     src/bus_factory.cpp
     src/block_factory.cpp
 )

@@ -1,31 +1,32 @@
 #include "core/bus_factory.h"
-#include "block/bus_types.h"
+#include "bus_types.h"
 
-using namespace block_engine::core;
-using namespace block_engine::block;
+namespace block_engine::core {
 
 BusFactory::BusFactory(BusFactory::TBusFactoryMap map) : map(std::move(map)) {}
 
-Bus BusFactory::createBusByName(const std::string &name) {
+Bus BusFactory::createBusByName(const std::string& name) {
     auto it = map.find(name);
     return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
-BusPtr BusFactory::createBusPtrByName(const std::string &name) {
+BusPtr BusFactory::createBusPtrByName(const std::string& name) {
     auto it = map.find(name);
     return it != map.end() ? makeBusPtr(std::move(it->second())) : BusPtr();
 }
 
-template <typename TData>
+template<typename TData>
 auto make_bus_initializer() {
-    return std::make_pair(BusType<TData>().name, [](){ return Bus(TData()); });
+    return std::make_pair(BusType<TData>().name, []() { return Bus(TData()); });
 }
 
-BusFactory block_engine::core::make_bus_factory() {
+BusFactory makeBusFactory() {
     BusFactory::TBusFactoryMap factory = {
-        make_bus_initializer<int>(),
-        make_bus_initializer<double>()
+            make_bus_initializer<int>(),
+            make_bus_initializer<double>()
     };
 
     return BusFactory{factory};
+}
+
 }

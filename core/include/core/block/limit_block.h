@@ -7,7 +7,7 @@
 
 #include "block.h"
 
-namespace block_engine::core::block {
+namespace block_engine::core {
 
 template<typename InType>
 class LimitBlockLogic : public BlockLogicBase {

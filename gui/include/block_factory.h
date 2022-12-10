@@ -1,5 +1,4 @@
-#ifndef BLOCK_ENGINE_BLOCK_FACTORY_H
-#define BLOCK_ENGINE_BLOCK_FACTORY_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -16,7 +15,9 @@ public:
     TBlockFactoryMap map;
 
     BlockFactory() = default;
+
     explicit BlockFactory(const TBlockFactoryMap& map);
+
     explicit BlockFactory(TBlockFactoryMap&& map);
 
     const TBlockInitializer& getInitializerByBlockName(const QString& block_name);
@@ -25,6 +26,3 @@ public:
 };
 
 BlockFactory make_block_factory();
-
-
-#endif //BLOCK_ENGINE_BLOCK_FACTORY_H

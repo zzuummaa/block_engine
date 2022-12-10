@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <block/bus_types.h>
+#include "bus_types.h"
 #include <block/block_description.h>
 
 #include "core/block/console_block.h"

@@ -40,10 +40,7 @@ public:
     virtual void connectOutputs(Connector&) { };
     virtual void updateSettings() { }
 
-    void setBlock(const model::Block& block_) {
-        this->block = block_;
-        updateSettings();
-    }
+    void setBlock(const model::Block& block_);
 };
 
 typedef std::shared_ptr<BlockLogicBase> BlockLogicBasePtr;

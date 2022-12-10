@@ -15,15 +15,26 @@ class SumBlockLogic : public BlockLogicBase {
     std::vector<Ref<OperandType>> inputs;
     Ref<OperandType> output;
 
+    OperandType dummy;
+
 public:
 
     bool calc() override {
-        output.get() = std::accumulate(inputs.begin(), inputs.end(), 0, [](auto& a, auto& b){ return a + b.get(); });
+        output.get() = std::accumulate(
+            inputs.begin() + 1,
+            inputs.end(),
+            inputs.begin()->get(),
+            [](auto& a, auto& b){ return a + b.get(); });
         return true;
     }
 
     void connectInputs(Connector &connector) override {
+        if (connector.count() == 0) {
+            inputs.resize(1);
+            inputs[0] = dummy;
+        }
         inputs.resize(connector.count());
+
         for (size_t i = 0; i < connector.count(); i++) {
             auto& bus = connector.getBus(i);
             inputs[i] = bus.data<OperandType>();

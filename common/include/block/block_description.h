@@ -5,29 +5,32 @@
 #pragma once
 
 #include <tuple>
+#include <nullable.h>
 
 namespace block_engine::block {
 
+using TCommonTypes = std::tuple<int, double, Nullable<int>, Nullable<double>>;
+
 struct ConsoleBlockDescription {
-    using TInstances = std::tuple<int, double>;
+    using TInstances = TCommonTypes;
 
     const char* name = "console";
 };
 
 struct ConstBlockDescription {
-    using TInstances = std::tuple<int, double>;
+    using TInstances = TCommonTypes;
 
     const char* name = "const";
 };
 
 struct LimitBlockDescription {
-    using TInstances = std::tuple<int, double>;
+    using TInstances = TCommonTypes;
 
     const char* name = "limit";
 };
 
 struct SumBlockDescription {
-    using TInstances = std::tuple<int, double>;
+    using TInstances = TCommonTypes;
 
     const char* name = "sum";
 };
