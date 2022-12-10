@@ -1,17 +1,21 @@
-#include "gui/block_factory.h"
-
-namespace block_engine::gui {
-
-BlockFactory::TBlock BlockFactory::createBlockByName(const BlockTypeInfo& info) {
-    auto it = map.find(info);
-    return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
-}
+#include "block_factory.h"
 
 BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
 
+const BlockFactory::TBlockInitializer& BlockFactory::getInitializerByBlockName(const QString& block_name) {
+    const auto it = map.find({block_name});
+    return it != map.end() ? it->second : throw std::runtime_error(__PRETTY_FUNCTION__);
+}
+
 template<typename TBlock, typename ...TArgs>
 auto make_block_initializer(const QString& block_name, TArgs ...args) {
-    return std::make_pair(BlockTypeInfo{block_name}, [=]() { return new TBlock(args...); });
+    const auto info = BlockTypeInfo{block_name};
+    return std::make_pair(info, [=]() { return new TBlock(info, args...); });
+}
+
+BlockFactory::TBlock BlockFactory::createBlockByName(const QString& block_name) {
+    auto it = map.find({block_name});
+    return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
 BlockFactory make_block_factory() {
@@ -23,6 +27,4 @@ BlockFactory make_block_factory() {
     };
 
     return BlockFactory{factory};
-}
-
 }

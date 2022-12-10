@@ -41,15 +41,22 @@
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QListWidget" name="block_list">
+      <widget class="QBlockList" name="block_list">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QSchemeEditor" name="scheme_editor"/>
+      <widget class="QSchemeEditor" name="scheme_editor">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>4</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -101,6 +108,11 @@
    <class>QSchemeEditor</class>
    <extends>QGraphicsView</extends>
    <header>qschemeeditor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QBlockList</class>
+   <extends>QListWidget</extends>
+   <header>qblocklist.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

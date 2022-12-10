@@ -5,25 +5,26 @@
 #include <string>
 #include <functional>
 
-#include "gui/block_type_info.h"
+#include "block_type_info.h"
 #include "qblock.h"
-
-namespace block_engine::gui {
 
 struct BlockFactory {
 public:
     using TBlock = QBlock*;
-    using TBlockFactoryMap = std::map<BlockTypeInfo, std::function<TBlock()>>;
+    using TBlockInitializer = std::function<TBlock()>;
+    using TBlockFactoryMap = std::map<BlockTypeInfo, TBlockInitializer>;
 
     TBlockFactoryMap map;
 
+    BlockFactory() = default;
     explicit BlockFactory(const TBlockFactoryMap &map);
 
-    TBlock createBlockByName(const BlockTypeInfo&);
+    const TBlockInitializer& getInitializerByBlockName(const QString& block_name);
+
+    TBlock createBlockByName(const QString& block_name);
 };
 
 BlockFactory make_block_factory();
 
-}
 
 #endif //BLOCK_ENGINE_BLOCK_FACTORY_H

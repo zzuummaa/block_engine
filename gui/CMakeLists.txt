@@ -14,9 +14,11 @@ add_executable(${PROJECT_NAME}
     src/qblockenginewindow.ui
     src/qschemeeditor.cpp
     src/qblock.cpp
+    src/qblocklist.cpp
     include/qblockenginewindow.h
     include/qschemeeditor.h
     include/qblock.h
+    include/qblocklist.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
