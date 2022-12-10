@@ -10,10 +10,10 @@
 
 using namespace block_engine::core;
 
-struct CoutCoreApiServer : public ICoreApiServer {
+struct CoutPrintEventHandler : public ICalcEngineEventHandler {
     std::shared_ptr<std::atomic_bool> is_end;
 
-    explicit CoutCoreApiServer(std::shared_ptr<std::atomic_bool> is_end) : is_end(std::move(is_end)) {}
+    explicit CoutPrintEventHandler(std::shared_ptr<std::atomic_bool> is_end) : is_end(std::move(is_end)) {}
 
     void notifyError(const CoreError& error) override {
         std::cout << error << std::endl;
@@ -21,7 +21,7 @@ struct CoutCoreApiServer : public ICoreApiServer {
 
     void notifyEvent(const CoreEvent& event) override {
         std::cout << event << std::endl;
-        if (event.event_type_id == 0) *is_end = true;
+        if (event.sub_type == CoreEventSubType::Stop) *is_end = true;
     }
 };
 
@@ -35,7 +35,7 @@ int main() {
     if (!SchemeValidator().validate(scheme)) throw std::runtime_error(__PRETTY_FUNCTION__);
 
     auto is_end = std::make_shared<std::atomic_bool>(false);
-    Core core{std::make_shared<CoutCoreApiServer>(is_end)};
+    Core core{std::make_shared<CoutPrintEventHandler>(is_end)};
     core.onSetScheme(scheme);
     core.onStartCalc();
 

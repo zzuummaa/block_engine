@@ -1,5 +1,5 @@
-#ifndef MODERN_CPP_DESIGN_BLOCK_H
-#define MODERN_CPP_DESIGN_BLOCK_H
+#ifndef BLOCK_ENGINE_CORE_BLOCK_H
+#define BLOCK_ENGINE_CORE_BLOCK_H
 
 #include <functional>
 #include <tuple>
@@ -94,4 +94,4 @@ BlockLogicBasePtr MakeBlockLogicBasePtr(Args&&... args) {
 //    }
 //};
 
-#endif //MODERN_CPP_DESIGN_BLOCK_H
+#endif //BLOCK_ENGINE_CORE_BLOCK_H

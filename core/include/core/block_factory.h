@@ -17,7 +17,7 @@ public:
     using TBlock = BlockLogicBasePtr;
     using TBlockFactoryMap = std::map<std::string, std::function<TBlock()>>;
 
-    explicit BlockFactory(const TBlockFactoryMap &map);
+    explicit BlockFactory(TBlockFactoryMap map);
 
     TBlock createBlockByName(const std::string& name);
 

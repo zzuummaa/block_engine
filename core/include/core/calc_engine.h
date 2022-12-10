@@ -14,10 +14,22 @@
 
 namespace block_engine::core {
 
+struct ICalcEngineEventHandler {
+    /**
+     * Used for notify about Scheme validation and other unexpected situations.
+     */
+    virtual void notifyError(const CoreError& error) = 0;
+
+    /**
+     * Used for notify about important calculation events.
+     */
+    virtual void notifyEvent(const CoreEvent& event) = 0;
+};
+
 class CalcEngine {
 public:
-    explicit CalcEngine(const model::Scheme& scheme, std::shared_ptr<ICoreApiServer> core_api_server)
-        : core_api_server(std::move(core_api_server)) {
+    explicit CalcEngine(const model::Scheme& scheme, std::shared_ptr<ICalcEngineEventHandler> event_handler)
+        : event_handler(std::move(event_handler)) {
         setScheme(scheme);
     };
 
@@ -32,9 +44,9 @@ public:
     bool process_step() {
         for (auto& block_logic : ordered_block_logics) {
             if (!block_logic->calc()) {
-                core_api_server->notifyEvent({
-                    .block_id = block_logic->block.id,
-                    .event_type_id = 0
+                event_handler->notifyEvent({
+                    block_logic->block.id,
+                    CoreEventSubType::Stop
                 });
                 return false;
             }
@@ -47,7 +59,7 @@ private:
     BlockManagementLogic block_management_logic;
     std::vector<int> calc_order;
     std::vector<BlockLogicBasePtr> ordered_block_logics;
-    std::shared_ptr<ICoreApiServer> core_api_server;
+    std::shared_ptr<ICalcEngineEventHandler> event_handler;
 
     void setScheme(const model::Scheme& scheme) {
         block_management_logic.setBlocks(std::move(DefaultBlockPolicy(make_block_factory()).blocks(scheme)));

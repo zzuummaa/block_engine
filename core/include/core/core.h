@@ -15,11 +15,11 @@ namespace block_engine::core {
 
 class Core : public ICoreApiServerHandler {
 public:
-    explicit Core(std::shared_ptr<ICoreApiServer> core_api_server) : core_api_server(std::move(core_api_server)) {}
+    explicit Core(std::shared_ptr<ICalcEngineEventHandler> event_handler) : event_handler(std::move(event_handler)) {}
 
     void onSetScheme(const model::Scheme &scheme) override {
         if (is_calcing) throw std::invalid_argument(__PRETTY_FUNCTION__);
-        calc_engine = std::make_shared<CalcEngine>(scheme, core_api_server);
+        calc_engine = std::make_shared<CalcEngine>(scheme, event_handler);
     }
 
     void onStartCalc() override {
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    std::shared_ptr<ICoreApiServer> core_api_server;
+    std::shared_ptr<ICalcEngineEventHandler> event_handler;
     std::shared_ptr<CalcEngine> calc_engine;
     SingleSeparateThreadExecutionLogic execution_logic;
     bool is_calcing{};

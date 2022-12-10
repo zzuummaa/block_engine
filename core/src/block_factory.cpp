@@ -1,5 +1,7 @@
 #include "core/block_factory.h"
 
+#include <utility>
+
 #include "core/blocks/console_block.h"
 #include "core/blocks/const_block.h"
 #include "core/blocks/sum_block.h"
@@ -13,7 +15,7 @@ BlockFactory::TBlock BlockFactory::createBlockByName(const std::string &name) {
     return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
-BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap &map) : map(map) {}
+BlockFactory::BlockFactory(BlockFactory::TBlockFactoryMap map) : map(std::move(map)) {}
 
 template <typename TBlock, typename ...TArgs>
 auto make_block_initializer(const std::string& block_name, TArgs ...args) {
