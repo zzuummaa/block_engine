@@ -62,7 +62,7 @@ private:
     std::shared_ptr<ICalcEngineEventHandler> event_handler;
 
     void setScheme(const model::Scheme& scheme) {
-        block_management_logic.setBlocks(std::move(DefaultBlockPolicy(make_block_factory()).blocks(scheme)));
+        block_management_logic.setBlocks(std::move(DefaultBlockPolicy(makeBlockFactory()).blocks(scheme)));
         block_management_logic.setConnectors(std::move(DefaultConnectionPolicy(make_bus_factory()).connectors(scheme)));
         block_management_logic.connectBlocks();
 

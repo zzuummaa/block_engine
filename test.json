@@ -4,7 +4,7 @@
   ],
   "block_types": [
     { "id": 1, "name": "const_int" },
-    { "id": 2, "name": "sum_2_int" },
+    { "id": 2, "name": "sum_int" },
     { "id": 3, "name": "console_int" },
     { "id": 4, "name": "limit_int" }
   ],

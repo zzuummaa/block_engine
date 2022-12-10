@@ -6,9 +6,9 @@
 #define MODERN_CPP_DESIGN_SUM_BLOCK_H
 
 #include <numeric>
-#include "core/block.h"
+#include "block.h"
 
-namespace block_engine::core::blocks {
+namespace block_engine::core::block {
 
 template<typename OperandType>
 class SumBlockLogic : public BlockLogicBase {
@@ -26,7 +26,7 @@ public:
         inputs.resize(connector.count());
         for (size_t i = 0; i < connector.count(); i++) {
             auto& bus = connector.getBus(i);
-            inputs[i] = bus.data<int>();
+            inputs[i] = bus.data<OperandType>();
         }
     }
 

@@ -7,7 +7,7 @@
 
 #include "model/scheme.h"
 #include "core_error.h"
-#include "core/core_event.h"
+#include "model/event.h"
 
 namespace block_engine::core {
 

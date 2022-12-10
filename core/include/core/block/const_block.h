@@ -5,9 +5,9 @@
 #ifndef BLOCK_ENGINE_CONST_BLOCK_H
 #define BLOCK_ENGINE_CONST_BLOCK_H
 
-#include "core/block.h"
+#include "block.h"
 
-namespace block_engine::core::blocks {
+namespace block_engine::core::block {
 
 template<typename OutType>
 class ConstBlockLogic : public BlockLogicBase {

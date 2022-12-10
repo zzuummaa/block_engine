@@ -16,7 +16,7 @@ enum class EventType {
 struct Event {
     EventType type;
 
-    Event(EventType type) : type(type) {}
+    explicit Event(EventType type) : type(type) {}
 };
 
 enum class CoreEventSubType {

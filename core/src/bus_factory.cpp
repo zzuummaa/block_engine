@@ -1,6 +1,8 @@
 #include "core/bus_factory.h"
+#include "block/bus_types.h"
 
 using namespace block_engine::core;
+using namespace block_engine::block;
 
 BusFactory::BusFactory(BusFactory::TBusFactoryMap map) : map(std::move(map)) {}
 
@@ -15,14 +17,14 @@ BusPtr BusFactory::createBusPtrByName(const std::string &name) {
 }
 
 template <typename TData>
-auto make_bus_initializer(const std::string& type_name) {
-    return std::make_pair(type_name, [](){ return Bus(TData()); });
+auto make_bus_initializer() {
+    return std::make_pair(BusType<TData>().name, [](){ return Bus(TData()); });
 }
 
 BusFactory block_engine::core::make_bus_factory() {
     BusFactory::TBusFactoryMap factory = {
-        make_bus_initializer<int>("int"),
-        make_bus_initializer<double>("double")
+        make_bus_initializer<int>(),
+        make_bus_initializer<double>()
     };
 
     return BusFactory{factory};

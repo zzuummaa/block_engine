@@ -6,7 +6,7 @@
 #include <typeinfo>
 #include <utility>
 
-#include "connector.h"
+#include "core/connector.h"
 #include "model/block.h"
 
 namespace block_engine::core {
@@ -52,6 +52,11 @@ template <typename Tp, typename... Args>
 BlockLogicBasePtr MakeBlockLogicBasePtr(Args&&... args) {
     std::shared_ptr<BlockLogicBase> base(new Tp(std::forward<Args>(args)...));
     return base;
+}
+
+template <typename TBlock, typename ...TArgs>
+auto makeBlockInitializer(const std::string& block_name, TArgs ...args) {
+    return [=]() { return MakeBlockLogicBasePtr<TBlock>(args...); };
 }
 
 }

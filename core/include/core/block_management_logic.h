@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "bus.h"
-#include "block.h"
+#include "core/block/block.h"
 
 namespace block_engine::core {
 

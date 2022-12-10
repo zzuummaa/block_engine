@@ -80,9 +80,11 @@ struct DefaultBlockPolicy {
             scheme.blocks.end(),
             std::inserter(blocks, blocks.end()),
             [&](auto& it){
+                const auto blockName = scheme.getBlockType(it.second.block_type_id);
+                if (!blockName) throw std::runtime_error(__PRETTY_FUNCTION__);
                 return std::make_pair(
                     it.first,
-                    block_factory.createBlockByName(*scheme.getBlockType(it.second.block_type_id))
+                    block_factory.createBlockByName(*blockName)
                 );
             }
         );

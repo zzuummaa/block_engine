@@ -5,9 +5,9 @@
 #ifndef BLOCK_ENGINE_LIMIT_BLOCK_H
 #define BLOCK_ENGINE_LIMIT_BLOCK_H
 
-#include "core/block.h"
+#include "block.h"
 
-namespace block_engine::core::blocks {
+namespace block_engine::core::block {
 
 template<typename InType>
 class LimitBlockLogic : public BlockLogicBase {
@@ -27,7 +27,7 @@ public:
 
     void connectInputs(Connector &connector) override {
         if (connector.count() != 1) throw std::runtime_error(__PRETTY_FUNCTION__);
-        input = connector.getBus(0).data<int>();
+        input = connector.getBus(0).data<InType>();
     }
 };
 
