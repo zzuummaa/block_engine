@@ -5,7 +5,6 @@
 #include <string>
 #include <functional>
 
-#include "block_type_info.h"
 #include "qblock.h"
 
 struct BlockFactory {
@@ -17,7 +16,8 @@ public:
     TBlockFactoryMap map;
 
     BlockFactory() = default;
-    explicit BlockFactory(const TBlockFactoryMap &map);
+    explicit BlockFactory(const TBlockFactoryMap& map);
+    explicit BlockFactory(TBlockFactoryMap&& map);
 
     const TBlockInitializer& getInitializerByBlockName(const QString& block_name);
 

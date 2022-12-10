@@ -15,23 +15,18 @@ using namespace block_engine::core::block;
 
 namespace block_engine::core {
 
+BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
+
+BlockFactory::BlockFactory(BlockFactory::TBlockFactoryMap&& map) : map(std::move(map)) {}
+
 BlockFactory::TBlock BlockFactory::createBlockByName(const std::string& name) {
     auto it = map.find(name);
     return it != map.end() ? it->second() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
-BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
-
-BlockFactory::BlockFactory(BlockFactory::TBlockFactoryMap&& map) : map(std::move(map)) {}
-
 template<typename TBlock, typename ...TArgs>
 auto make_block_initializer(const std::string& block_name, TArgs ...args) {
     return std::make_pair(block_name, [=]() { return MakeBlockLogicBasePtr<TBlock>(args...); });
-}
-
-template<template<typename ...> typename TBlock, typename TDescription, typename ...TArgs>
-static void create_initializers_internal(const BlockFactory::TBlockFactoryMap& factory, TArgs ...args) {
-
 }
 
 struct BlockFactoryBuilder {
@@ -56,17 +51,7 @@ private:
     BlockFactory::TBlockFactoryMap factory_map;
 };
 
-
-
-
 BlockFactory makeBlockFactory() {
-//    BlockFactory::TBlockFactoryMap factory = {
-//            make_block_initializer<ConsoleBlockLogic<int>>("console_int"),
-//            make_block_initializer<ConstBlockLogic<int>>("const_int", 0),
-//            make_block_initializer<SumBlockLogic<int>>("sum_2_int"),
-//            make_block_initializer<LimitBlockLogic<int>>("limit_int"),
-//    };
-
     BlockFactoryBuilder builder;
 
     builder.create_block_initializers<ConsoleBlockLogic, ConsoleBlockDescription>();
