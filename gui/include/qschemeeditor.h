@@ -13,6 +13,8 @@ public:
 
 protected:
     void wheelEvent ( QWheelEvent * event ) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
 protected slots:
     void scalingTime(qreal x);
@@ -22,6 +24,7 @@ private:
     int num_scheduled_scalings;
     int origin_x;
     int origin_y;
+    QRectF scene_shift;
 };
 
 #endif //BLOCK_ENGINE_QSCHEMEEDITOR_H

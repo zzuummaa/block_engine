@@ -7,7 +7,8 @@
 
 QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent) {
     auto scene = new QGraphicsScene(this);
-    scene->setSceneRect(-1000, -1000, 1000, 1000);
+    scene->setBackgroundBrush(QBrush(Qt::gray));
+//    scene->addEllipse(-500, -500, 1000, 1000, QPen(Qt::black), QBrush(Qt::NoBrush));
 
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -15,8 +16,6 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent) {
 }
 
 void QSchemeEditor::addBlock(QBlock* block) {
-    qDebug() << "QSchemeEditor::addBlock";
-
 //    QGraphicsProxyWidget* proxyWidget = scene()->addWidget(block);
 //    proxyWidget->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
 
@@ -43,7 +42,7 @@ void QSchemeEditor::wheelEvent(QWheelEvent* event) {
         num_scheduled_scalings = numSteps;
     }
 
-    QTimeLine *anim = new QTimeLine(350, this);
+    auto anim = new QTimeLine(350, this);
     anim->setUpdateInterval(20);
 
     connect(anim, SIGNAL (valueChanged(qreal)), SLOT (scalingTime(qreal)));
@@ -66,3 +65,28 @@ void QSchemeEditor::animFinished() {
 }
 
 // ================ Scaling end ===========================
+
+void QSchemeEditor::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::RightButton) {
+        origin_x = event->x();
+        origin_y = event->y();
+    }
+
+    QGraphicsView::mousePressEvent(event);
+}
+
+void QSchemeEditor::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::RightButton) {
+
+        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - (event->x() - origin_x));
+        verticalScrollBar()->setValue(verticalScrollBar()->value() - (event->y() - origin_y));
+        origin_x = event->x();
+        origin_y = event->y();
+    }
+
+    if (event->buttons() & (Qt::LeftButton|Qt::RightButton|Qt::MiddleButton)) {
+        scene()->setSceneRect(scene()->itemsBoundingRect());
+    }
+
+    QGraphicsView::mouseMoveEvent(event);
+}
