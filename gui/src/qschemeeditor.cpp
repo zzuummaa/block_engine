@@ -21,7 +21,7 @@ void QSchemeEditor::addBlock(QBlock* block) {
 
     // Create the graphics item that will be used to move the widget around the screen as well as be selectable (for example in case we want to delete a widget that is in the scene)
     // Depending on the position of the graphics item relative to its widget proxy you can adjust the size and location of both
-    QGraphicsRectItem *proxyControl = scene()->addRect(0, 0, block->width(), block->height(), QPen(Qt::black), QBrush(Qt::NoBrush)); // widget->width() works properly here because of the resize(layout->sizeHint()) that we have used inside it
+    QGraphicsRectItem *proxyControl = scene()->addRect(0, 0, block->width(), block->height(), QPen(Qt::transparent), QBrush(Qt::NoBrush)); // widget->width() works properly here because of the resize(layout->sizeHint()) that we have used inside it
     proxyControl->setFlag(QGraphicsItem::ItemIsMovable, true);
     proxyControl->setFlag(QGraphicsItem::ItemIsSelectable, true);
     // Create the proxy by adding the widget to the scene

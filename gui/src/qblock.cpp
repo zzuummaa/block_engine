@@ -3,7 +3,7 @@
 
 #include "qblock.h"
 
-QBlock::QBlock(const BlockTypeInfo& info) : QWidget(nullptr, Qt::WindowFlags()), block_info(info) {
+QBlock::QBlock(const BlockTypeInfo& info) : block_info(info) {
     setFixedSize(50, 50);
 
 }

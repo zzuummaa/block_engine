@@ -4,12 +4,21 @@
 #include <string>
 #include <functional>
 
-#include "qblock.h"
+#include <bus_group_holder.h>
+#include <qblock.h>
+
+struct BlockInitializer {
+    using TBlock = QBlock*;
+    using TBusCollection = std::vector<BusGroupHolder>;
+
+    std::function<TBlock()> makeBlock;
+    std::function<TBusCollection()> makeInputs;
+};
 
 struct BlockFactory {
 public:
-    using TBlock = QBlock*;
-    using TBlockInitializer = std::function<TBlock()>;
+
+    using TBlockInitializer = BlockInitializer;
     using TBlockFactoryMap = std::map<BlockTypeInfo, TBlockInitializer>;
 
     TBlockFactoryMap map;
@@ -22,7 +31,7 @@ public:
 
     const TBlockInitializer& getInitializerByBlockName(const QString& block_name);
 
-    TBlock createBlockByName(const QString& block_name);
+    BlockInitializer::TBlock createBlockByName(const QString& block_name);
 };
 
 BlockFactory make_block_factory();

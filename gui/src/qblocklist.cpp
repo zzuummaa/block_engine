@@ -4,8 +4,6 @@
 
 #include "qblocklist.h"
 
-#include <utility>
-
 QBlockList::QBlockList(QWidget* parent, const BlockFactory& factory) : QListWidget(parent) {
     setBlockFactory(factory);
 
@@ -17,7 +15,7 @@ QBlockList::QBlockList(QWidget* parent, const BlockFactory& factory) : QListWidg
 void QBlockList::setBlockFactory(const BlockFactory& factory) {
     block_factory = factory;
     clear();
-    for (const auto& [type_info, initializer] : make_block_factory().map) {
+    for (const auto& [type_info, initializer] : block_factory.map) {
         addItem(type_info.name);
     }
 }

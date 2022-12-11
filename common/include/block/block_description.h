@@ -6,6 +6,7 @@
 
 #include <tuple>
 #include <nullable.h>
+#include <block/description_framework.h>
 
 namespace block_engine::block {
 
@@ -13,6 +14,8 @@ using TCommonTypes = std::tuple<int, double, Nullable<int>, Nullable<double>>;
 
 struct ConsoleBlockDescription {
     using TInstances = TCommonTypes;
+
+    using TInputTypes = Range<2, 10, Instance>;
 
     const char* name = "console";
 };
