@@ -8,11 +8,15 @@
 #include <qblock.h>
 
 struct BlockInitializer {
-    using TBlock = QBlock*;
-    using TBusCollection = std::vector<BusGroupHolder>;
+    friend struct BlockFactory;
 
-    std::function<TBlock()> makeBlock;
-    std::function<TBusCollection()> makeInputs;
+    using TBlock = QBlock*;
+    using TBusCollection = BusGroupHolder;
+
+    TBlock makeBlock() const;
+
+    std::function<TBlock(const BlockInitializer&)> blockInitializer;
+    std::function<TBusCollection()> inputsInitializer;
 };
 
 struct BlockFactory {

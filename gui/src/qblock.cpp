@@ -3,9 +3,16 @@
 
 #include "qblock.h"
 
-QBlock::QBlock(const BlockTypeInfo& info) : block_info(info) {
-    setFixedSize(50, 50);
+QBlock::QBlock(
+    BlockTypeInfo info,
+    BusGroupHolder inputs)
+    : block_info(std::move(info))
+    , inputs(std::move(inputs)) {
 
+    setFixedSize(50, 50);
+    inputs.forEach([&](QBus* bus){
+        bus->setParent(this);
+    });
 }
 
 void QBlock::paintEvent(QPaintEvent *event) {

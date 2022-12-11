@@ -13,11 +13,16 @@ public:
     using TBusCollection = std::vector<TBus>;
     using THolderCollection = std::vector<std::unique_ptr<BusGroupHolder>>;
 
+    BusGroupHolder() : isOptional(false) {}
+    BusGroupHolder(BusGroupHolder&&) = default;
+
     template<typename TType>
     explicit BusGroupHolder(bool isOptional) : value(TType()), isOptional(isOptional) {}
 
     template<typename TType>
     BusGroupHolder(const TType& value, bool isOptional) : value(value), isOptional(isOptional) {}
+
+    BusGroupHolder& operator=(BusGroupHolder other);
 
     [[nodiscard]] bool isBus() const;
     [[nodiscard]] bool isBusCollection() const;
@@ -26,6 +31,26 @@ public:
     TBus bus();
     TBusCollection& busCollection();
     THolderCollection& holderCollection();
+
+    template<typename TConsumer>
+    void forEach(const TConsumer& consumer) {
+        forEach(*this, consumer);
+    }
+
+    template<typename TConsumer>
+    static void forEach(BusGroupHolder& holder, const TConsumer& consumer) {
+        if (holder.isBus()) {
+            consumer(holder.bus());
+        } else if (holder.isBusCollection()) {
+            auto& pins = holder.busCollection();
+            std::for_each(pins.begin(), pins.end(), consumer);
+        } else if (holder.isHolderCollection()) {
+            auto& holders = holder.holderCollection();
+            for (auto& subHolder : holders) {
+                forEach(subHolder, consumer);
+            }
+        }
+    }
 
 private:
     std::variant<TBus, TBusCollection, THolderCollection> value;

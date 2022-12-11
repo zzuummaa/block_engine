@@ -27,3 +27,9 @@ BusGroupHolder::TBusCollection& BusGroupHolder::busCollection() {
 BusGroupHolder::THolderCollection& BusGroupHolder::holderCollection() {
     return get<BusGroupHolder::THolderCollection>();
 }
+
+BusGroupHolder& BusGroupHolder::operator=(BusGroupHolder other) {
+    value = std::move(other.value);
+    std::swap(isOptional, other.isOptional);
+    return *this;
+}

@@ -6,6 +6,11 @@
 using namespace block_engine;
 using namespace block_engine::block;
 
+
+BlockInitializer::TBlock BlockInitializer::makeBlock() const {
+    return nullptr;
+}
+
 BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
 
 BlockFactory::BlockFactory(BlockFactory::TBlockFactoryMap&& map) : map(std::move(map)) {}
@@ -21,44 +26,37 @@ BlockInitializer::TBlock BlockFactory::createBlockByName(const QString& block_na
 }
 
 template<typename = void, typename>
-void createPins(const BlockInitializer::TBusCollection&, bool) {
+void createPins(BusGroupHolder& pins, bool) {
 
 }
 
-template<typename TPins, typename, std::enable_if_t<!std::is_same<TPins, void>::value>>
-void createPins(const BlockInitializer::TBusCollection& pins, bool isOptional) {
-    static_assert(false && sizeof(TPins), "Unsupported bus type");
+template<typename TPin, typename, std::enable_if_t<!std::is_same<TPin, void>::value>>
+void createPins(BusGroupHolder& pins, bool isOptional) {
+    static_assert(!std::is_base_of_v<Marker, TPin>, "Invalid function for marker");
+
+    const auto& name = BusType<TPin>().name;
+    pins = {new QBus({name}), isOptional};
 }
 
-template<typename TPins, typename TInstance, typename std::enable_if_t<std::is_base_of<Instance, TPins>::type>>
-void createPins(BlockInitializer::TBusCollection& pins, bool isOptional) {
+template<typename TPin, typename TInstance, typename std::enable_if_t<std::is_base_of<Instance, TPin>::type>>
+void createPins(BusGroupHolder& pins, bool isOptional) {
     const auto& name = BusType<TInstance>().name;
-    pins.emplace_back(new QBus({name}), isOptional);
+    pins = {new QBus({name}), isOptional};
 }
 
 template<typename TPins, typename TInstance, typename std::enable_if_t<IsRange<TPins::begin, TPins::end, TPins, Range>::type>>
-void createPins(BlockInitializer::TBusCollection& pins, bool isOptional) {
-    constexpr bool isMarkerRange = std::is_base_of_v<Marker, typename TPins::TPin>;
-
-    if constexpr(isMarkerRange) {
-        pins.emplace_back(BusGroupHolder::THolderCollection(), isOptional);
-    } else {
-        pins.emplace_back(BusGroupHolder::TBusCollection(), isOptional);
-    }
+void createPins(BusGroupHolder& pins, bool isOptional) {
+    pins = {BusGroupHolder::THolderCollection(), isOptional};
+    auto& subHolders = pins.holderCollection();
 
     for (size_t i = 0; i < TPins::end; i++) {
-        if constexpr(isMarkerRange) {
-            createPins<TPins::TPin>(pins.back().holderCollection());
-        } else {
-            const auto& name = BusType<typename TPins::TPin>().name;
-            pins.back().busCollection().push_back(new QBus({ name }));
-        }
+        createPins<TPins::TPin>(subHolders.emplace_back(), i < TPins::begin);
     }
 }
 
 template<typename TPinAccessor>
 auto createPins() {
-    BlockInitializer::TBusCollection pins;
+    BusGroupHolder pins;
     createPins<typename TPinAccessor::TPins, typename TPinAccessor::TInstance>(pins, false);
     return pins;
 }
@@ -69,7 +67,9 @@ auto makeBlockInitializer(const QString& block_name, TArgs ...args) {
     return std::make_pair(
         info,
         BlockInitializer{
-            [=]() { return new TBlock(info, args...); },
+            [=](const auto& initializer) {
+                return new TBlock(info, initializer.inputsInitializer(), args...);
+            },
             [=]() { return createPins<InputAccessor<TDescription, TInstance>>(); }
         });
 }

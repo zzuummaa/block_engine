@@ -12,6 +12,9 @@ Q_OBJECT
 public:
     explicit QBus(const BusTypeInfo&);
 
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+
 private:
     BusTypeInfo info;
 };
