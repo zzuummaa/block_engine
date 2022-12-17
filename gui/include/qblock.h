@@ -2,6 +2,7 @@
 #define BLOCK_ENGINE_QBLOCK_H
 
 #include <QWidget>
+#include <QVBoxLayout>
 #include <bus_group_holder.h>
 #include <block_type_info.h>
 
@@ -17,6 +18,9 @@ protected:
 private:
     BlockTypeInfo block_info;
     BusGroupHolder inputs;
+
+    QVBoxLayout* inputs_layout;
+    QVBoxLayout* outputs_layout;
 };
 
 #endif //BLOCK_ENGINE_QBLOCK_H
