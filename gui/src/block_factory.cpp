@@ -31,30 +31,30 @@ BlockInitializer::TBlock BlockFactory::createBlockByName(const QString& block_na
 //}
 
 template<typename TPin, typename, std::enable_if_t<!std::is_base_of_v<Marker, TPin>, int> = 0>
-void createPins(BusGroupHolder& pins, bool isOptional) {
+void createPins(PinGroupHolder& pins, bool isOptional) {
     static_assert(!std::is_base_of_v<Marker, TPin>, "Invalid function for marker");
 
     const auto& name = BusType<TPin>().name;
-    pins = {new QBus({name}), isOptional};
+    pins = {new QPin({name}), isOptional};
 }
 
 template<typename TPin, typename, std::enable_if_t<std::is_same_v<Empty, TPin>, int> = 0>
-void createPins(BusGroupHolder& pins, bool) {
+void createPins(PinGroupHolder& pins, bool) {
 }
 
 template<typename TPin, typename TInstance, std::enable_if_t<std::is_same_v<Instance, TPin>, int> = 0>
-void createPins(BusGroupHolder& pins, bool isOptional) {
+void createPins(PinGroupHolder& pins, bool isOptional) {
     const auto& name = BusType<TInstance>().name;
-    pins = {new QBus({name}), isOptional};
+    pins = {new QPin({name}), isOptional};
 }
 
 template<typename TPins, typename TInstance, std::enable_if_t<IsRange<TPins, Range>::value, int> = 0>
-void createPins(BusGroupHolder& pins, bool isOptional) {
-    pins = std::move(BusGroupHolder(std::move(BusGroupHolder::THolderCollection()), isOptional));
+void createPins(PinGroupHolder& pins, bool isOptional) {
+    pins = std::move(PinGroupHolder(std::move(PinGroupHolder::THolderCollection()), isOptional));
     auto& subHolders = pins.holderCollection();
 
     for (size_t i = 0; i < TPins::end; i++) {
-        auto subHolder = std::make_unique<BusGroupHolder>();
+        auto subHolder = std::make_unique<PinGroupHolder>();
         createPins<typename TPins::TPin, TInstance>(*subHolder, i < TPins::begin);
         if (!subHolder->isEmpty()) {
             subHolders.push_back(std::move(subHolder));
@@ -64,7 +64,7 @@ void createPins(BusGroupHolder& pins, bool isOptional) {
 
 template<typename TPinAccessor>
 auto createPins() {
-    BusGroupHolder pins;
+    PinGroupHolder pins;
     createPins<typename TPinAccessor::TPins, typename TPinAccessor::TInstance>(pins, false);
     return pins;
 }

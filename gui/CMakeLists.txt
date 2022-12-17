@@ -13,14 +13,16 @@ add_executable(${PROJECT_NAME}
     src/qblockenginewindow.cpp
     src/qblockenginewindow.ui
     src/qschemeeditor.cpp
-    src/qbus.cpp
-    src/bus_group_holder.cpp
+    src/scheme_editor_model.cpp
+    src/qpin.cpp
+    src/pin_group_holder.cpp
     src/qblock.cpp
     src/qblock.ui
     src/qblocklist.cpp
     include/qblockenginewindow.h
     include/qschemeeditor.h
-    include/qbus.h
+    include/scheme_editor_model.h
+    include/qpin.h
     include/qblock.h
     include/qblocklist.h
 )

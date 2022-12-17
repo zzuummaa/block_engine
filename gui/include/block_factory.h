@@ -4,19 +4,19 @@
 #include <string>
 #include <functional>
 
-#include <bus_group_holder.h>
+#include <pin_group_holder.h>
 #include <qblock.h>
 
 struct BlockInitializer {
     friend struct BlockFactory;
 
     using TBlock = QBlock*;
-    using TBusCollection = BusGroupHolder;
+    using TPinCollection = PinGroupHolder;
 
     TBlock makeBlock() const;
 
     std::function<TBlock(const BlockInitializer&)> blockInitializer;
-    std::function<TBusCollection()> inputsInitializer;
+    std::function<TPinCollection()> inputsInitializer;
 };
 
 struct BlockFactory {

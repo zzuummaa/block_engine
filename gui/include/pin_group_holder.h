@@ -4,42 +4,42 @@
 
 #pragma once
 
-#include <qbus.h>
+#include <qpin.h>
 #include <variant>
 
-class BusGroupHolder {
+class PinGroupHolder {
 public:
-    using TBus = QBus*;
+    using TBus = QPin*;
     using TBusCollection = std::vector<TBus>;
-    using THolderCollection = std::vector<std::unique_ptr<BusGroupHolder>>;
+    using THolderCollection = std::vector<std::unique_ptr<PinGroupHolder>>;
 
-    BusGroupHolder() : isOptional(false) {}
-    BusGroupHolder(BusGroupHolder&&) = default;
-    BusGroupHolder(const BusGroupHolder&) = delete;
+    PinGroupHolder() : isOptional(false) {}
+    PinGroupHolder(PinGroupHolder&&) = default;
+    PinGroupHolder(const PinGroupHolder&) = delete;
 
-    BusGroupHolder& operator=(BusGroupHolder& other) = delete;
-    BusGroupHolder& operator=(BusGroupHolder&& other) = default;
-
-    template<typename TType>
-    explicit BusGroupHolder(bool isOptional) : value(TType()), isOptional(isOptional) {}
+    PinGroupHolder& operator=(PinGroupHolder& other) = delete;
+    PinGroupHolder& operator=(PinGroupHolder&& other) = default;
 
     template<typename TType>
-    BusGroupHolder(TType&& value, bool isOptional) : value(std::forward<TType>(value)), isOptional(isOptional) {}
+    explicit PinGroupHolder(bool isOptional) : value(TType()), isOptional(isOptional) {}
+
+    template<typename TType>
+    PinGroupHolder(TType&& value, bool isOptional) : value(std::forward<TType>(value)), isOptional(isOptional) {}
 
     [[nodiscard]] constexpr bool isEmpty() const noexcept {
         return std::holds_alternative<std::monostate>(value);
     }
 
     [[nodiscard]] constexpr bool isBus() const noexcept {
-        return std::holds_alternative<BusGroupHolder::TBus>(value);
+        return std::holds_alternative<PinGroupHolder::TBus>(value);
     }
 
     [[nodiscard]] constexpr bool isBusCollection() const noexcept {
-        return std::holds_alternative<BusGroupHolder::TBusCollection>(value);
+        return std::holds_alternative<PinGroupHolder::TBusCollection>(value);
     }
 
     [[nodiscard]] constexpr bool isHolderCollection() const noexcept {
-        return std::holds_alternative<BusGroupHolder::THolderCollection>(value);
+        return std::holds_alternative<PinGroupHolder::THolderCollection>(value);
     }
 
     TBus bus();
@@ -52,7 +52,7 @@ public:
     }
 
     template<typename TConsumer>
-    static void forEach(BusGroupHolder& holder, const TConsumer& consumer) {
+    static void forEach(PinGroupHolder& holder, const TConsumer& consumer) {
         if (holder.isBus()) {
             consumer(holder.bus());
         } else if (holder.isBusCollection()) {
