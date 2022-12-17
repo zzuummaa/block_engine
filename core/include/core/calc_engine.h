@@ -63,7 +63,7 @@ private:
 
     void setScheme(const model::Scheme& scheme) {
         block_management_logic.setBlocks(std::move(DefaultBlockPolicy(makeBlockFactory()).blocks(scheme)));
-        block_management_logic.setConnectors(std::move(DefaultConnectionPolicy(make_bus_factory()).connectors(scheme)));
+        block_management_logic.setConnectors(std::move(DefaultConnectionPolicy(makeBusFactory()).connectors(scheme)));
         block_management_logic.connectBlocks();
 
         calc_order = graph::topologySort(scheme);

@@ -10,6 +10,8 @@
 class QBus : public QWidget {
 Q_OBJECT
 public:
+    static constexpr auto SIZE = QSize(4, 4);
+
     explicit QBus(const BusTypeInfo&);
 
 protected:

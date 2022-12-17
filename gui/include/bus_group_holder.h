@@ -15,18 +15,32 @@ public:
 
     BusGroupHolder() : isOptional(false) {}
     BusGroupHolder(BusGroupHolder&&) = default;
+    BusGroupHolder(const BusGroupHolder&) = delete;
+
+    BusGroupHolder& operator=(BusGroupHolder& other) = delete;
+    BusGroupHolder& operator=(BusGroupHolder&& other) = default;
 
     template<typename TType>
     explicit BusGroupHolder(bool isOptional) : value(TType()), isOptional(isOptional) {}
 
     template<typename TType>
-    BusGroupHolder(const TType& value, bool isOptional) : value(value), isOptional(isOptional) {}
+    BusGroupHolder(TType&& value, bool isOptional) : value(std::forward<TType>(value)), isOptional(isOptional) {}
 
-    BusGroupHolder& operator=(BusGroupHolder other);
+    [[nodiscard]] constexpr bool isEmpty() const noexcept {
+        return std::holds_alternative<std::monostate>(value);
+    }
 
-    [[nodiscard]] bool isBus() const;
-    [[nodiscard]] bool isBusCollection() const;
-    [[nodiscard]] bool isHolderCollection() const;
+    [[nodiscard]] constexpr bool isBus() const noexcept {
+        return std::holds_alternative<BusGroupHolder::TBus>(value);
+    }
+
+    [[nodiscard]] constexpr bool isBusCollection() const noexcept {
+        return std::holds_alternative<BusGroupHolder::TBusCollection>(value);
+    }
+
+    [[nodiscard]] constexpr bool isHolderCollection() const noexcept {
+        return std::holds_alternative<BusGroupHolder::THolderCollection>(value);
+    }
 
     TBus bus();
     TBusCollection& busCollection();
@@ -47,13 +61,13 @@ public:
         } else if (holder.isHolderCollection()) {
             auto& holders = holder.holderCollection();
             for (auto& subHolder : holders) {
-                forEach(subHolder, consumer);
+                forEach(*subHolder, consumer);
             }
         }
     }
 
 private:
-    std::variant<TBus, TBusCollection, THolderCollection> value;
+    std::variant<std::monostate, TBus, TBusCollection, THolderCollection> value;
     bool isOptional;
 
     template<typename TType>

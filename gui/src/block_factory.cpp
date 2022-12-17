@@ -8,7 +8,7 @@ using namespace block_engine::block;
 
 
 BlockInitializer::TBlock BlockInitializer::makeBlock() const {
-    return nullptr;
+    return blockInitializer(*this);
 }
 
 BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map) {}
@@ -25,12 +25,12 @@ BlockInitializer::TBlock BlockFactory::createBlockByName(const QString& block_na
     return it != map.end() ? it->second.makeBlock() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
-template<typename = void, typename>
-void createPins(BusGroupHolder& pins, bool) {
+//template<typename = void, typename>
+//void createPins(BusGroupHolder& pins, bool) {
+//
+//}
 
-}
-
-template<typename TPin, typename, std::enable_if_t<!std::is_same<TPin, void>::value>>
+template<typename TPin, typename, std::enable_if_t<!std::is_base_of_v<Marker, TPin>, int> = 0>
 void createPins(BusGroupHolder& pins, bool isOptional) {
     static_assert(!std::is_base_of_v<Marker, TPin>, "Invalid function for marker");
 
@@ -38,19 +38,27 @@ void createPins(BusGroupHolder& pins, bool isOptional) {
     pins = {new QBus({name}), isOptional};
 }
 
-template<typename TPin, typename TInstance, typename std::enable_if_t<std::is_base_of<Instance, TPin>::type>>
+template<typename TPin, typename, std::enable_if_t<std::is_same_v<Empty, TPin>, int> = 0>
+void createPins(BusGroupHolder& pins, bool) {
+}
+
+template<typename TPin, typename TInstance, std::enable_if_t<std::is_same_v<Instance, TPin>, int> = 0>
 void createPins(BusGroupHolder& pins, bool isOptional) {
     const auto& name = BusType<TInstance>().name;
     pins = {new QBus({name}), isOptional};
 }
 
-template<typename TPins, typename TInstance, typename std::enable_if_t<IsRange<TPins::begin, TPins::end, TPins, Range>::type>>
+template<typename TPins, typename TInstance, std::enable_if_t<IsRange<TPins, Range>::value, int> = 0>
 void createPins(BusGroupHolder& pins, bool isOptional) {
-    pins = {BusGroupHolder::THolderCollection(), isOptional};
+    pins = std::move(BusGroupHolder(std::move(BusGroupHolder::THolderCollection()), isOptional));
     auto& subHolders = pins.holderCollection();
 
     for (size_t i = 0; i < TPins::end; i++) {
-        createPins<TPins::TPin>(subHolders.emplace_back(), i < TPins::begin);
+        auto subHolder = std::make_unique<BusGroupHolder>();
+        createPins<typename TPins::TPin, TInstance>(*subHolder, i < TPins::begin);
+        if (!subHolder->isEmpty()) {
+            subHolders.push_back(std::move(subHolder));
+        }
     }
 }
 
@@ -70,7 +78,9 @@ auto makeBlockInitializer(const QString& block_name, TArgs ...args) {
             [=](const auto& initializer) {
                 return new TBlock(info, initializer.inputsInitializer(), args...);
             },
-            [=]() { return createPins<InputAccessor<TDescription, TInstance>>(); }
+            [=]() {
+                return createPins<InputAccessor<TDescription, TInstance>>();
+            }
         });
 }
 
@@ -106,6 +116,13 @@ BlockFactory make_block_factory() {
     builder.create_block_initializers<QBlock, ConstBlockDescription>();
     builder.create_block_initializers<QBlock, SumBlockDescription>();
     builder.create_block_initializers<QBlock, LimitBlockDescription>();
+
+//    using TAccessor = InputAccessor<SumBlockDescription, Nullable<double>>;
+//    std::cout << (TAccessor::hasPins ? "true" : "false") << std::endl;
+//    std::cout << typeid(TAccessor::TPins).name() << std::endl;
+//
+//    BusGroupHolder holder;
+//    createPins<TAccessor::TPins, TAccessor::TInstance>(holder, false);
 
     return builder.build();
 }

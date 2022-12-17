@@ -1,6 +1,4 @@
-//
-// Created by Stepan on 10.12.2022.
-//
+#include <QTimer>
 
 #include "qblocklist.h"
 
@@ -9,6 +7,10 @@ QBlockList::QBlockList(QWidget* parent, const BlockFactory& factory) : QListWidg
 
     QObject::connect(this, &QBlockList::itemDoubleClicked, this, [this](QListWidgetItem *item){
         emit blockDoubleClicked({item->text()}, block_factory.getInitializerByBlockName(item->text()));
+    });
+
+    QTimer::singleShot(10, this, [this](){
+        emit blockDoubleClicked({"sum_int"}, block_factory.getInitializerByBlockName("sum_int"));
     });
 }
 

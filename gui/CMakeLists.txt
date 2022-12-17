@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
     src/qbus.cpp
     src/bus_group_holder.cpp
     src/qblock.cpp
+    src/qblock.ui
     src/qblocklist.cpp
     include/qblockenginewindow.h
     include/qschemeeditor.h

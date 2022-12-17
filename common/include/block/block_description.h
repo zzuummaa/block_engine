@@ -15,7 +15,7 @@ using TCommonTypes = std::tuple<int, double, Nullable<int>, Nullable<double>>;
 struct ConsoleBlockDescription {
     using TInstances = TCommonTypes;
 
-    using TInputTypes = Range<2, 10, Instance>;
+    using TInputs = Instance;
 
     const char* name = "console";
 };
@@ -29,11 +29,15 @@ struct ConstBlockDescription {
 struct LimitBlockDescription {
     using TInstances = TCommonTypes;
 
+    using TInputs = Instance;
+
     const char* name = "limit";
 };
 
 struct SumBlockDescription {
     using TInstances = TCommonTypes;
+
+    using TInputs = Range<2, 10, Instance>;
 
     const char* name = "sum";
 };

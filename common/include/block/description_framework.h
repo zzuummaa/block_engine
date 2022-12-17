@@ -20,40 +20,42 @@ struct Instances<TWrapper, std::tuple<TArgs...>> : public std::tuple<TArgs...> {
 
 struct Marker {};
 
+struct Empty : public Marker {};
+
 // Place instance type
-struct Instance : public Marker {
-    using marker = int;
-};
+struct Instance : public Marker {};
 
 // Place TType begin to end times
-template<size_t begin, size_t end, typename TType>
+template<size_t begin_, size_t end_, typename TType>
 struct Range : public Marker {
+    static constexpr int begin = begin_;
+    static constexpr int end = end_;
     using TPin = TType;
     static_assert(begin <= end, "begin can't be greater then end");
 };
 
-template <auto, auto, typename, template <auto, auto, typename...> typename TType>
+template <typename, template <auto, auto, typename...> typename TType>
 struct IsRange : public std::false_type {};
 
 template <auto begin, auto end, typename ...TArgs, template <auto, auto, typename...> typename TType>
-struct IsRange<begin, end, TType<begin, end, TArgs...>, TType> : public std::true_type {};
+struct IsRange<TType<begin, end, TArgs...>, TType> : public std::true_type {};
 
 template<typename TDescription, typename = void>
 struct HasInputs : std::false_type {
-    using TPins = void;
+    using TPins = Empty;
 };
 
 template<typename TDescription>
-struct HasInputs<TDescription, typename std::enable_if<TDescription::TInputs>> : std::true_type {
+struct HasInputs<TDescription, std::void_t<typename TDescription::TInputs>> : std::true_type {
     using TPins = typename TDescription::TInputs;
 };
 
-template<typename TDescription, typename _TInstance>
+template<typename TDescription, typename TInstance_>
 struct InputAccessor {
     using TPins = typename HasInputs<TDescription>::TPins;
-    using TInstance = _TInstance;
+    using TInstance = TInstance_;
 
-    constexpr static bool hasPins = HasInputs<TDescription>::value;
+    static constexpr bool hasPins = HasInputs<TDescription>::value;
 };
 
 template <typename, template <typename...> typename>

@@ -16,14 +16,14 @@ BusPtr BusFactory::createBusPtrByName(const std::string& name) {
 }
 
 template<typename TData>
-auto make_bus_initializer() {
+auto makeBusInitializer() {
     return std::make_pair(BusType<TData>().name, []() { return Bus(TData()); });
 }
 
 BusFactory makeBusFactory() {
     BusFactory::TBusFactoryMap factory = {
-            make_bus_initializer<int>(),
-            make_bus_initializer<double>()
+        makeBusInitializer<int>(),
+        makeBusInitializer<double>()
     };
 
     return BusFactory{factory};

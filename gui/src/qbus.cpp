@@ -7,14 +7,14 @@
 
 #include "qbus.h"
 
-QBus::QBus(const BusTypeInfo& info) : QWidget(), info(info) {
-    setFixedSize(4, 4);
+QBus::QBus(const BusTypeInfo& info) : info(info) {
+    setFixedSize(SIZE);
 }
 
 void QBus::paintEvent(QPaintEvent* event) {
     QPainter painter;
-    painter.setBrush(Qt::white);
     painter.begin(this);
+    painter.setBrush(Qt::white);
     painter.drawEllipse(event->rect());
     QWidget::paintEvent(event);
     painter.end();

@@ -6,6 +6,9 @@
 #include <bus_group_holder.h>
 #include <block_type_info.h>
 
+namespace Ui {
+class QBlock;
+}
 
 class QBlock : public QWidget {
 Q_OBJECT
@@ -16,11 +19,10 @@ protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    Ui::QBlock *ui;
+
     BlockTypeInfo block_info;
     BusGroupHolder inputs;
-
-    QVBoxLayout* inputs_layout;
-    QVBoxLayout* outputs_layout;
 };
 
 #endif //BLOCK_ENGINE_QBLOCK_H
