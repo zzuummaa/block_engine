@@ -5,7 +5,7 @@
 #include "qblock.h"
 #include "scheme_editor_model.h"
 
-class QPinLinker : public QObject {
+class QPinLinkDetector : public QObject {
 Q_OBJECT
 private:
     enum class State {
@@ -15,7 +15,7 @@ private:
     };
 
 public:
-    QPinLinker();
+    QPinLinkDetector();
 
     void pinPressed(QPin* pin);
 
@@ -62,7 +62,7 @@ private:
     std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
 
     SchemeEditorModel model;
-    QPinLinker pinLinker;
+    QPinLinkDetector pinLinker;
 
     int numScheduledScalings;
     int origin_x;

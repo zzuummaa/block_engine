@@ -16,7 +16,7 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numSchedu
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
 
-    QObject::connect(&pinLinker, &QPinLinker::link, this, [](QPin* from, QPin* to){
+    QObject::connect(&pinLinker, &QPinLinkDetector::link, this, [](QPin* from, QPin* to){
         qDebug() << "link from" << from << "to" << to;
     });
 }
@@ -172,9 +172,9 @@ void QSchemeEditor::mouseReleaseEvent(QMouseEvent* event) {
     QGraphicsView::mouseReleaseEvent(event);
 }
 
-QPinLinker::QPinLinker() : state(State::Ready), pressedPin(nullptr) {}
+QPinLinkDetector::QPinLinkDetector() : state(State::Ready), pressedPin(nullptr) {}
 
-void QPinLinker::pinPressed(QPin* pin) {
+void QPinLinkDetector::pinPressed(QPin* pin) {
     if (state != State::Ready && state != State::MouseReleased) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
@@ -183,7 +183,7 @@ void QPinLinker::pinPressed(QPin* pin) {
     qDebug() << "QPinLinker PinPressed";
 }
 
-void QPinLinker::mouseReleased(QPoint pos) {
+void QPinLinkDetector::mouseReleased(QPoint pos) {
     if (state != State::PinPressed) {
         reset();
         return;
@@ -193,7 +193,7 @@ void QPinLinker::mouseReleased(QPoint pos) {
     qDebug() << "QPinLinker MouseReleased at" << releasePosition;
 }
 
-void QPinLinker::mouseMoved(QPin* pin, QRectF pinRect) {
+void QPinLinkDetector::mouseMoved(QPin* pin, QRectF pinRect) {
     if (state != State::MouseReleased) {
         return;
     }
@@ -205,7 +205,7 @@ void QPinLinker::mouseMoved(QPin* pin, QRectF pinRect) {
     reset();
 }
 
-void QPinLinker::reset() {
+void QPinLinkDetector::reset() {
     state = State::Ready;
     pressedPin = nullptr;
     releasePosition = QPoint();
