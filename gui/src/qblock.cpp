@@ -39,7 +39,10 @@ void QBlock::paintEvent(QPaintEvent *event) {
     painter.end();
 }
 
+
+
 void QBlock::addInput(QPin* pin) {
     ui->inputsLayout->addWidget(pin);
     QObject::connect(pin, &QPin::pinPressed, this, [this, pin](){ emit pinPressed(pin); });
+    QObject::connect(pin, &QPin::pinFocussed, this, [this, pin](){ emit pinFocussed(pin); });
 }

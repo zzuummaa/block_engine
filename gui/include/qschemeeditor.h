@@ -5,6 +5,35 @@
 #include "qblock.h"
 #include "scheme_editor_model.h"
 
+class QPinLinker : public QObject {
+Q_OBJECT
+private:
+    enum class State {
+        Ready,
+        PinPressed,
+        MouseReleased
+    };
+
+public:
+    QPinLinker();
+
+    void pinPressed(QPin* pin);
+
+    void mouseReleased(QPoint pos);
+
+    void mouseMoved(QPin* pin, QRectF pinRect);
+
+    void reset();
+
+signals:
+    void link(QPin* from, QPin* to);
+
+private:
+    State state;
+    QPin* pressedPin;
+    QPoint releasePosition;
+};
+
 class QSchemeEditor : public QGraphicsView  {
     Q_OBJECT
 public:
@@ -16,6 +45,7 @@ protected:
     void wheelEvent ( QWheelEvent * event ) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
     void resizeEvent(QResizeEvent* event) override;
 
@@ -26,10 +56,13 @@ protected slots:
     void animFinished();
 
     void pinPressed(QPin* pin);
-    void pinFocussed(QPin* pin, bool isFocussed);
+    void pinFocussed(QPin* pin, QRectF pinRect);
 
 private:
+    std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
+
     SchemeEditorModel model;
+    QPinLinker pinLinker;
 
     int numScheduledScalings;
     int origin_x;

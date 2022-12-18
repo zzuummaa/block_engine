@@ -1,9 +1,10 @@
-#include "qschemeeditor.h"
 #include <qgraphicsitem.h>
 #include <qgraphicsproxywidget.h>
 #include <qdebug.h>
 #include <QTimeLine>
 #include <qscrollbar.h>
+
+#include "qschemeeditor.h"
 
 QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numScheduledScalings(0), scale(1.0) {
     auto scene = new QGraphicsScene(this);
@@ -14,6 +15,10 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numSchedu
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
+
+    QObject::connect(&pinLinker, &QPinLinker::link, this, [](QPin* from, QPin* to){
+        qDebug() << "link from" << from << "to" << to;
+    });
 }
 
 void QSchemeEditor::addBlock(QBlock* block) {
@@ -24,22 +29,26 @@ void QSchemeEditor::addBlock(QBlock* block) {
     proxyControl->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     // Create the proxy by adding the widget to the scene
-    QGraphicsProxyWidget * const proxy = scene()->addWidget(block);
+    QGraphicsProxyWidget* const proxy = scene()->addWidget(block);
     // In my case the rectangular graphics item is supposed to be above my widget so the position of the widget is shifted along the Y axis based on the height of the rectangle of that graphics item
 //    proxy->setPos(0, 0+proxyControl->rect().height());
     proxy->setParentItem(proxyControl);
 
     QObject::connect(block, &QBlock::pinPressed, this, &QSchemeEditor::pinPressed);
-    QObject::connect(block, &QBlock::pinFocussed, this, &QSchemeEditor::pinPressed);
+    QObject::connect(block, &QBlock::pinFocussed, this, [this](auto pin){ pinFocussed(pin, proxyByPin[pin]->geometry()); });
 
     model.addBlock(reinterpret_cast<SchemeEditorModel::TId>(block), block->info());
     block->forEachInput([&](auto pin){
+        proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin));
+
         model.addInput(
             reinterpret_cast<SchemeEditorModel::TId>(block),
             reinterpret_cast<SchemeEditorModel::TId>(pin),
             pin->info());
     });
     block->forEachOutput([&](auto pin){
+        proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin));
+
         model.addOutput(
             reinterpret_cast<SchemeEditorModel::TId>(block),
             reinterpret_cast<SchemeEditorModel::TId>(pin),
@@ -137,9 +146,67 @@ void QSchemeEditor::mouseMoveEvent(QMouseEvent* event) {
 // =========================== Bus creating ===========================
 
 void QSchemeEditor::pinPressed(QPin* pin) {
-    qDebug() << "QSchemeEditor::pinPressed()" << pin;
+//    qDebug() << "QSchemeEditor::pinPressed()" << pin;
+    pinLinker.pinPressed(pin);
 }
 
-void QSchemeEditor::pinFocussed(QPin* pin, bool isFocussed) {
-    qDebug() << "QSchemeEditor::pinFocussed()" << pin << ", isFocussed:" << isFocussed;
+void QSchemeEditor::pinFocussed(QPin* pin, QRectF pinRect) {
+//    qDebug() << "QSchemeEditor::pinFocussed()" << pinRect;
+    pinLinker.mouseMoved(pin, mapFromScene(pinRect).boundingRect());
+}
+
+void QSchemeEditor::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        // TODO maybe can use QGraphicsScene::itemAt
+//        qDebug() << "QSchemeEditor::mouseReleaseEvent()";
+//        auto item = dynamic_cast<QGraphicsProxyWidget*>(itemAt(event->pos()));
+//        if (item) {
+//            auto pin = dynamic_cast<QPin*>(item->widget());
+//            if (pin) {
+//                qDebug() << "release pin" << pin;
+//            }
+//        }
+        pinLinker.mouseReleased(event->pos());
+    }
+
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+QPinLinker::QPinLinker() : state(State::Ready), pressedPin(nullptr) {}
+
+void QPinLinker::pinPressed(QPin* pin) {
+    if (state != State::Ready && state != State::MouseReleased) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
+    pressedPin = pin;
+    state = State::PinPressed;
+    qDebug() << "QPinLinker PinPressed";
+}
+
+void QPinLinker::mouseReleased(QPoint pos) {
+    if (state != State::PinPressed) {
+        reset();
+        return;
+    }
+    releasePosition = pos;
+    state = State::MouseReleased;
+    qDebug() << "QPinLinker MouseReleased at" << releasePosition;
+}
+
+void QPinLinker::mouseMoved(QPin* pin, QRectF pinRect) {
+    if (state != State::MouseReleased) {
+        return;
+    }
+    assert(pressedPin);
+    qDebug() << "QPinLinker mouseMoved to" << pinRect;
+    if (pinRect.contains(releasePosition)) {
+        emit link(pressedPin, pin);
+    }
+    reset();
+}
+
+void QPinLinker::reset() {
+    state = State::Ready;
+    pressedPin = nullptr;
+    releasePosition = QPoint();
 }

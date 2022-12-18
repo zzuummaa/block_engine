@@ -32,7 +32,7 @@ protected:
 
 signals:
     void pinPressed(QPin* pin);
-    void pinFocussed(QPin* pin, bool isFocussed);
+    void pinFocussed(QPin* pin);
 
 private:
     Ui::QBlock *ui;

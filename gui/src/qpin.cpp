@@ -10,8 +10,9 @@
 
 #include "qpin.h"
 
-QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)), isFocussed(false) {
+QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)) {
     setFixedSize(SIZE);
+    setMouseTracking(true);
 }
 
 void QPin::paintEvent(QPaintEvent* event) {
@@ -31,3 +32,11 @@ void QPin::mousePressEvent(QMouseEvent* event) {
 
     QWidget::mousePressEvent(event);
 }
+
+void QPin::mouseMoveEvent(QMouseEvent* event) {
+//    qDebug() << "QPin::mouseMoveEvent()" << this;
+    emit pinFocussed();
+
+    QWidget::mouseMoveEvent(event);
+}
+

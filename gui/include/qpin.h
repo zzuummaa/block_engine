@@ -18,12 +18,15 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+
+    void mouseMoveEvent(QMouseEvent* event) override;
+
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 signals:
     void pinPressed();
+    void pinFocussed();
 
 private:
     BusTypeInfo pin_info;
-    bool isFocussed;
 };
