@@ -37,10 +37,10 @@ public:
 
         for (auto &json_block: json_object.at("blocks")) {
             auto block = model::Block{
-                    .id = json_block["block_id"].get<int>(),
-                    .block_type_id = json_block["block_type_id"].get<int>(),
-                    .input_count = json_block["input_count"].get<int>(),
-                    .output_count = json_block["output_count"].get<int>()
+                .id = json_block["block_id"].get<int>(),
+                .block_type_id = json_block["block_type_id"].get<int>(),
+                .input_count = json_block["input_count"].get<int>(),
+                .output_count = json_block["output_count"].get<int>()
             };
             if (!scheme.addBlock(block.id, block)) throw std::runtime_error(__PRETTY_FUNCTION__);
         }

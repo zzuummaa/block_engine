@@ -50,7 +50,7 @@ struct BusType<Nullable<type>> \
 };
 
 #define BUS_NULLABLE_OSTREAM_OPERATOR(type) \
-std::ostream& operator<<(std::ostream &output, const block_engine::Nullable<type>& value) { \
+inline std::ostream& operator<<(std::ostream &output, const block_engine::Nullable<type>& value) { \
     if (value.has_value()) { \
         output << const_cast<type&>(*value); \
     } \

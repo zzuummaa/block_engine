@@ -15,6 +15,8 @@ struct CoutPrintEventHandler : public ICalcEngineEventHandler {
 
     explicit CoutPrintEventHandler(std::shared_ptr<std::atomic_bool> is_end) : is_end(std::move(is_end)) {}
 
+    virtual ~CoutPrintEventHandler() = default;
+
     void notifyError(const CoreError& error) override {
         std::cout << error << std::endl;
     }

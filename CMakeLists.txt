@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-error=c++20-designator)
 
 add_subdirectory(common)
 add_subdirectory(core)

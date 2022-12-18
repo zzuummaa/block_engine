@@ -39,7 +39,7 @@ struct DefaultConnectionPolicy {
 
         for (const auto& [id, block]: scheme.blocks) {
             const auto& [_, is_ok] = conns.emplace(
-                std::remove_const<typeof(id)>::type(id),
+                std::remove_const<decltype(id)>::type(id),
                 std::make_pair(TConnector(block.input_count), TConnector(block.output_count))
             );
             if (!is_ok) throw std::runtime_error(__PRETTY_FUNCTION__);
