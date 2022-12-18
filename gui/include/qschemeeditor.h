@@ -3,6 +3,7 @@
 
 #include <QGraphicsView>
 #include "qblock.h"
+#include "scheme_editor_model.h"
 
 class QSchemeEditor : public QGraphicsView  {
     Q_OBJECT
@@ -16,15 +17,24 @@ protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
+    void resizeEvent(QResizeEvent* event) override;
+
+    void updateSceneRect();
+    void startBus(QPin* pin);
+    void endBus(QPin* pin);
 protected slots:
     void scalingTime(qreal x);
     void animFinished();
 
 private:
-    int num_scheduled_scalings;
+    SchemeEditorModel model;
+
+    int numScheduledScalings;
     int origin_x;
     int origin_y;
-    QRectF scene_shift;
+
+    QPointF center;
+    qreal scale;
 };
 
 #endif //BLOCK_ENGINE_QSCHEMEEDITOR_H
