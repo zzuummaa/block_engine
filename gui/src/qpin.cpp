@@ -10,7 +10,7 @@
 
 #include "qpin.h"
 
-QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)) {
+QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)), isFocussed(false) {
     setFixedSize(SIZE);
 }
 
@@ -25,18 +25,9 @@ void QPin::paintEvent(QPaintEvent* event) {
 
 void QPin::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
-        emit busStartMarked();
+        emit pinPressed();
         return;
     }
 
     QWidget::mousePressEvent(event);
-}
-
-void QPin::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        emit busEndMarked();
-        return;
-    }
-
-    QWidget::mouseReleaseEvent(event);
 }

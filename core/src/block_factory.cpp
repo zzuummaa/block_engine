@@ -29,7 +29,7 @@ auto make_block_initializer(const std::string& block_name, TArgs ...args) {
     return std::make_pair(block_name, [=]() { return MakeBlockLogicBasePtr<TBlock>(args...); });
 }
 
-struct BlockFactoryBuilder {
+class BlockFactoryBuilder {
 public:
     template<template<typename ...> typename TBlock, typename TDescription, typename ...TArgs>
     void create_block_initializers(TArgs ...args) {

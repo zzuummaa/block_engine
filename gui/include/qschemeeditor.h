@@ -20,11 +20,13 @@ protected:
     void resizeEvent(QResizeEvent* event) override;
 
     void updateSceneRect();
-    void startBus(QPin* pin);
-    void endBus(QPin* pin);
+
 protected slots:
     void scalingTime(qreal x);
     void animFinished();
+
+    void pinPressed(QPin* pin);
+    void pinFocussed(QPin* pin, bool isFocussed);
 
 private:
     SchemeEditorModel model;

@@ -52,7 +52,7 @@ BlockLogicBasePtr MakeBlockLogicBasePtr(Args&&... args) {
 }
 
 template <typename TBlock, typename ...TArgs>
-auto makeBlockInitializer(const std::string& block_name, TArgs ...args) {
+auto makeBlockInitializer(const std::string& /*blockName*/, TArgs ...args) {
     return [=]() { return MakeBlockLogicBasePtr<TBlock>(args...); };
 }
 

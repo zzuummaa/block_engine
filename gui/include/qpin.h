@@ -18,15 +18,12 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-
-    void mouseReleaseEvent(QMouseEvent* event) override;
-
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 signals:
-    void busStartMarked();
-    void busEndMarked();
+    void pinPressed();
 
 private:
     BusTypeInfo pin_info;
+    bool isFocussed;
 };

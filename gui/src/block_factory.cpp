@@ -39,7 +39,7 @@ void createPins(PinGroupHolder& pins, bool isOptional) {
 }
 
 template<typename TPin, typename, std::enable_if_t<std::is_same_v<Empty, TPin>, int> = 0>
-void createPins(PinGroupHolder& pins, bool) {
+void createPins(PinGroupHolder&, bool) {
 }
 
 template<typename TPin, typename TInstance, std::enable_if_t<std::is_same_v<Instance, TPin>, int> = 0>
@@ -50,7 +50,7 @@ void createPins(PinGroupHolder& pins, bool isOptional) {
 
 template<typename TPins, typename TInstance, std::enable_if_t<IsRange<TPins, Range>::value, int> = 0>
 void createPins(PinGroupHolder& pins, bool isOptional) {
-    pins = std::move(PinGroupHolder(std::move(PinGroupHolder::THolderCollection()), isOptional));
+    pins = PinGroupHolder(PinGroupHolder::THolderCollection(), isOptional);
     auto& subHolders = pins.holderCollection();
 
     for (size_t i = 0; i < TPins::end; i++) {

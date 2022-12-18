@@ -8,7 +8,7 @@ QBlockEngineWindow::QBlockEngineWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QObject::connect(ui->block_list, &QBlockList::blockDoubleClicked, ui->scheme_editor, [this](const auto& info, const auto& initializer){
+    QObject::connect(ui->block_list, &QBlockList::blockDoubleClicked, ui->scheme_editor, [this](const auto& initializer){
         ui->scheme_editor->addBlock(initializer.makeBlock());
     });
 }

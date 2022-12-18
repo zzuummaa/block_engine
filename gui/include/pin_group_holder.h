@@ -68,7 +68,7 @@ public:
 
 private:
     std::variant<std::monostate, TBus, TBusCollection, THolderCollection> value;
-    bool isOptional;
+    [[maybe_unused]] bool isOptional;
 
     template<typename TType>
     TType& get() {

@@ -41,6 +41,5 @@ void QBlock::paintEvent(QPaintEvent *event) {
 
 void QBlock::addInput(QPin* pin) {
     ui->inputsLayout->addWidget(pin);
-    QObject::connect(pin, &QPin::busStartMarked, this, [this, pin](){ emit busStartMarked(pin); });
-    QObject::connect(pin, &QPin::busEndMarked, this, [this, pin](){ emit busEndMarked(pin); });
+    QObject::connect(pin, &QPin::pinPressed, this, [this, pin](){ emit pinPressed(pin); });
 }

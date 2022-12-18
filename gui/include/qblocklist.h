@@ -15,7 +15,7 @@ public:
     void setBlockFactory(const BlockFactory& factory);
 
 signals:
-    void blockDoubleClicked(const BlockTypeInfo& info, const BlockFactory::TBlockInitializer& initializer);
+    void blockDoubleClicked(const BlockFactory::TBlockInitializer& initializer);
 
 private:
     BlockFactory block_factory;

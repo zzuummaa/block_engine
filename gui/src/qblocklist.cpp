@@ -6,11 +6,11 @@ QBlockList::QBlockList(QWidget* parent, const BlockFactory& factory) : QListWidg
     setBlockFactory(factory);
 
     QObject::connect(this, &QBlockList::itemDoubleClicked, this, [this](QListWidgetItem *item){
-        emit blockDoubleClicked({item->text()}, block_factory.getInitializerByBlockName(item->text()));
+        emit blockDoubleClicked(block_factory.getInitializerByBlockName(item->text()));
     });
 
     QTimer::singleShot(10, this, [this](){
-        emit blockDoubleClicked({"sum_int"}, block_factory.getInitializerByBlockName("sum_int"));
+        emit blockDoubleClicked(block_factory.getInitializerByBlockName("sum_int"));
     });
 }
 

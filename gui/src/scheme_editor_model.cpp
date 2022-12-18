@@ -6,7 +6,7 @@ void SchemeEditorModel::addBlock(TId id, const BlockTypeInfo& info) {
     }
 }
 
-void SchemeEditorModel::addInput(TId blockId, TId inputId, const BusTypeInfo& info) {
+void SchemeEditorModel::addInput(TId /*blockId*/, TId inputId, const BusTypeInfo& info) {
     if (outputs.count(inputId)) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
@@ -16,7 +16,7 @@ void SchemeEditorModel::addInput(TId blockId, TId inputId, const BusTypeInfo& in
     }
 }
 
-void SchemeEditorModel::addOutput(TId blockId, TId outputId, const BusTypeInfo& info) {
+void SchemeEditorModel::addOutput(TId /*blockId*/, TId outputId, const BusTypeInfo& info) {
     if (inputs.count(outputId)) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }

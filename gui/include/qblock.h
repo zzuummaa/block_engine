@@ -31,8 +31,8 @@ protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 signals:
-    void busStartMarked(QPin* pin);
-    void busEndMarked(QPin* pin);
+    void pinPressed(QPin* pin);
+    void pinFocussed(QPin* pin, bool isFocussed);
 
 private:
     Ui::QBlock *ui;

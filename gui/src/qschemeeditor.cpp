@@ -14,8 +14,6 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numSchedu
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
-    setContentsMargins(0, 0, 0, 0);
-    setViewportMargins(0, 0, 0, 0);
 }
 
 void QSchemeEditor::addBlock(QBlock* block) {
@@ -31,8 +29,8 @@ void QSchemeEditor::addBlock(QBlock* block) {
 //    proxy->setPos(0, 0+proxyControl->rect().height());
     proxy->setParentItem(proxyControl);
 
-    QObject::connect(block, &QBlock::busStartMarked, this, &QSchemeEditor::startBus);
-    QObject::connect(block, &QBlock::busEndMarked, this, &QSchemeEditor::endBus);
+    QObject::connect(block, &QBlock::pinPressed, this, &QSchemeEditor::pinPressed);
+    QObject::connect(block, &QBlock::pinFocussed, this, &QSchemeEditor::pinPressed);
 
     model.addBlock(reinterpret_cast<SchemeEditorModel::TId>(block), block->info());
     block->forEachInput([&](auto pin){
@@ -59,11 +57,10 @@ void QSchemeEditor::updateSceneRect() {
         editorBounds.width() - padding.width() * 2,
         editorBounds.height() - padding.height() * 2);
 
-    qDebug() << "QSchemeEditor::updateSceneRect() bounds: " << editorBounds << ", center:" << editorBounds.center();
+//    qDebug() << "QSchemeEditor::updateSceneRect() bounds: " << editorBounds << ", center:" << editorBounds.center();
 }
 
 void QSchemeEditor::resizeEvent(QResizeEvent* event) {
-//    center = rect().center();
     updateSceneRect();
     QGraphicsView::resizeEvent(event);
 }
@@ -87,7 +84,7 @@ void QSchemeEditor::wheelEvent(QWheelEvent* event) {
     anim->start();
 }
 
-void QSchemeEditor::scalingTime(qreal x) {
+void QSchemeEditor::scalingTime(qreal) {
     qreal factor = 1.0 + qreal(numScheduledScalings) / 300.0;
     scale *= factor;
 
@@ -120,14 +117,11 @@ void QSchemeEditor::mousePressEvent(QMouseEvent* event) {
 
 void QSchemeEditor::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() & Qt::RightButton) {
-//        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - (event->x() - origin_x));
-//        verticalScrollBar()->setValue(verticalScrollBar()->value() - (event->y() - origin_y));
-
         auto start = QPoint(event->x(), event->y());
         auto end = QPoint(origin_x, origin_y);
         auto diff = mapToScene(end) - mapToScene(start);
         center += diff;
-        qDebug() << "center:" << center << ", diff:" << diff;
+//        qDebug() << "center:" << center << ", diff:" << diff;
 
         origin_x = event->x();
         origin_y = event->y();
@@ -142,10 +136,10 @@ void QSchemeEditor::mouseMoveEvent(QMouseEvent* event) {
 
 // =========================== Bus creating ===========================
 
-void QSchemeEditor::startBus(QPin* pin) {
-    qDebug() << "QSchemeEditor::startBus()" << pin;
+void QSchemeEditor::pinPressed(QPin* pin) {
+    qDebug() << "QSchemeEditor::pinPressed()" << pin;
 }
 
-void QSchemeEditor::endBus(QPin* pin) {
-    qDebug() << "QSchemeEditor::endBus()" << pin;
+void QSchemeEditor::pinFocussed(QPin* pin, bool isFocussed) {
+    qDebug() << "QSchemeEditor::pinFocussed()" << pin << ", isFocussed:" << isFocussed;
 }
