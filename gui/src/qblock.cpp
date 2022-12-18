@@ -32,7 +32,9 @@ QBlock::QBlock(
 void QBlock::paintEvent(QPaintEvent *event) {
     QPainter painter;
     painter.begin(this);
-    painter.fillRect(event->rect(), Qt::red);
+    painter.setPen(QPen(Qt::black, 1));
+    painter.setBrush(Qt::red);
+    painter.drawRect(event->rect());
     QWidget::paintEvent(event);
     painter.end();
 }

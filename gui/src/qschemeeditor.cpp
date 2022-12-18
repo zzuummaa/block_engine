@@ -14,6 +14,8 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numSchedu
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
+    setContentsMargins(0, 0, 0, 0);
+    setViewportMargins(0, 0, 0, 0);
 }
 
 void QSchemeEditor::addBlock(QBlock* block) {
@@ -49,29 +51,15 @@ void QSchemeEditor::addBlock(QBlock* block) {
 
 void QSchemeEditor::updateSceneRect() {
     const auto editorBounds = mapToScene(rect()).boundingRect();
-    const auto itemBounds = scene()->itemsBoundingRect();
-
-//    scene()->setSceneRect(
-//        itemBounds.x() - editorBounds.width(),
-//        itemBounds.y() - editorBounds.height(),
-//        itemBounds.width() + editorBounds.width() * 2,
-//        itemBounds.height() + editorBounds.height() * 2);
-
-//    scene()->setSceneRect(
-//        editorBounds.x() - editorBounds.width(),
-//        editorBounds.y() - editorBounds.height(),
-//        editorBounds.width() * 3,
-//        editorBounds.height() * 3);
-
-    const qreal padding = 4;
+    const auto padding = mapToScene(0, 0, 4, 4).boundingRect().size();
 
     scene()->setSceneRect(
-        center.x() - editorBounds.width() / 2.0 + padding,
-        center.y() - editorBounds.height() / 2.0 + padding,
-        editorBounds.width() - padding * 2,
-        editorBounds.height() - padding * 2);
+        center.x() - editorBounds.width() / 2.0 + padding.width(),
+        center.y() - editorBounds.height() / 2.0 + padding.height(),
+        editorBounds.width() - padding.width() * 2,
+        editorBounds.height() - padding.height() * 2);
 
-//    qDebug() << "QSchemeEditor::updateSceneRect() bounds: " << editorBounds << ", center:" << editorBounds.center();
+    qDebug() << "QSchemeEditor::updateSceneRect() bounds: " << editorBounds << ", center:" << editorBounds.center();
 }
 
 void QSchemeEditor::resizeEvent(QResizeEvent* event) {
@@ -91,8 +79,6 @@ void QSchemeEditor::wheelEvent(QWheelEvent* event) {
         numScheduledScalings = numSteps;
     }
 
-    qDebug() << "QSchemeEditor::wheelEvent() numDegrees:" << numDegrees << ", numScheduledScalings:" << numScheduledScalings;
-
     auto anim = new QTimeLine(350, this);
     anim->setUpdateInterval(20);
 
@@ -104,17 +90,8 @@ void QSchemeEditor::wheelEvent(QWheelEvent* event) {
 void QSchemeEditor::scalingTime(qreal x) {
     qreal factor = 1.0 + qreal(numScheduledScalings) / 300.0;
     scale *= factor;
-//    qreal factor = 2.0;
-    qDebug() << "factor:" << factor;
-//    scale(factor, factor);
 
     auto transform = QTransform(scale, 0, 0, scale, center.x(), center.y());
-
-//    auto transform = this->transform();
-//    const auto oldCenter = transform.map(center);
-//    transform.scale(factor, factor);
-//    const auto newCenter = transform.map(rect().center());
-//    transform.translate(oldCenter.x() - newCenter.x(), oldCenter.y() - newCenter.y());
 
     setTransform(transform);
 
