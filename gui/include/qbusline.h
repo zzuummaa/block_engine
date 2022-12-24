@@ -5,7 +5,7 @@
 class QBusLine : public QWidget {
 Q_OBJECT
 public:
-    explicit QBusLine(qreal length, QWidget* parent);
+    explicit QBusLine(qreal length, QWidget* parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent* event) override;

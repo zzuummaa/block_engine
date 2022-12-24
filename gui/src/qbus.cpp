@@ -2,40 +2,40 @@
 
 #include <utility>
 
-std::optional<QBus> QBus::concat(const QBus& lhs, const QBus& rhs) {
-    const auto& lhsTypeInfo = lhs.getTypeInfo();
-    const auto& rhsTypeInfo = rhs.getTypeInfo();
+QBus* QBus::concat(const QBus* lhs, const QBus* rhs) {
+    const auto& lhsTypeInfo = lhs->getTypeInfo();
+    const auto& rhsTypeInfo = rhs->getTypeInfo();
 
     bool isConcatableByType = !lhsTypeInfo || !rhsTypeInfo || (*lhsTypeInfo == *rhsTypeInfo);
     if (!isConcatableByType) {
-        return std::nullopt;
+        return nullptr;
     }
 
-    if (lhs.input && rhs.input) {
-        return std::nullopt;
+    if (lhs->input && rhs->input) {
+        return nullptr;
     }
-    const auto& input = lhs.input ? lhs.input : rhs.input;
+    const auto& input = lhs->input ? lhs->input : rhs->input;
 
     // Expect that output has only one linked bus
     std::vector<QPin*> outputs;
-    std::copy(lhs.outputs.begin(), lhs.outputs.end(), std::back_inserter(outputs));
-    std::copy(rhs.outputs.begin(), rhs.outputs.end(), std::back_inserter(outputs));
+    std::copy(lhs->outputs.begin(), lhs->outputs.end(), std::back_inserter(outputs));
+    std::copy(rhs->outputs.begin(), rhs->outputs.end(), std::back_inserter(outputs));
     std::sort(outputs.begin(), outputs.end());
     outputs.erase(std::unique(outputs.begin(), outputs.end()), outputs.end());
-    if (outputs.size() != lhs.outputs.size() + rhs.outputs.size()) {
+    if (outputs.size() != lhs->outputs.size() + rhs->outputs.size()) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 
     std::vector<QBusLine*> parts;
-    std::copy(lhs.parts.begin(), lhs.parts.end(), std::back_inserter(parts));
-    std::copy(rhs.parts.begin(), rhs.parts.end(), std::back_inserter(parts));
+    std::copy(lhs->parts.begin(), lhs->parts.end(), std::back_inserter(parts));
+    std::copy(rhs->parts.begin(), rhs->parts.end(), std::back_inserter(parts));
     std::sort(parts.begin(), parts.end());
     parts.erase(std::unique(parts.begin(), parts.end()), parts.end());
-    if (parts.size() != lhs.parts.size() + rhs.parts.size()) {
+    if (parts.size() != lhs->parts.size() + rhs->parts.size()) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 
-    return QBus { input, outputs, parts };
+    return new QBus { input, outputs, parts };
 }
 
 QBus::QBus(

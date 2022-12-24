@@ -2,7 +2,10 @@
 #define BLOCK_ENGINE_QSCHEMEEDITOR_H
 
 #include <QGraphicsView>
+#include <map>
+#include <unordered_map>
 #include "qbusline.h"
+#include "qbus.h"
 #include "qblock.h"
 #include "scheme_editor_model.h"
 
@@ -39,15 +42,21 @@ public:
     explicit QSchemeEditor(QWidget* parent = nullptr);
 
     void addBlock(QBlock* block);
-    void addBusLine(QBusLine* busLine);
+    void tryAddBusLine(QPointF from, QPointF to);
 
 protected:
+    std::pair<QGraphicsRectItem*, QGraphicsProxyWidget*> addSceneProxy(QWidget*, qreal x, qreal y);
+
     void wheelEvent ( QWheelEvent * event ) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
-    void resizeEvent(QResizeEvent* event) override;
+    void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+
+    void keyReleaseEvent(QKeyEvent* event) override;
+
+    void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
 
     void updateSceneRect();
 
@@ -60,9 +69,14 @@ protected slots:
 
 private:
     std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
+    std::map<QWidget*, QBus*> busses;
 
     SchemeEditorModel model;
     QPinLinkDetector pinLinker;
+
+    std::optional<QPoint> leftPressPos;
+
+    bool isShiftPressed;
 
     int numScheduledScalings;
     int origin_x;

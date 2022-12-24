@@ -4,13 +4,14 @@
 
 #include "qbusline.h"
 
-QBusLine::QBusLine(qreal length, QWidget* parent) : QWidget(parent), length(length) {}
+QBusLine::QBusLine(qreal length, QWidget* parent) : QWidget(parent), length(length) {
+    setFixedSize(static_cast<int>(length), 1);
+}
 
 void QBusLine::paintEvent(QPaintEvent* event) {
     QPainter painter;
     painter.begin(this);
-    painter.setBrush(Qt::black);
-    painter.drawRect(0, 0, static_cast<int>(length), 1);
+    painter.fillRect(event->rect(), Qt::black);
     QWidget::paintEvent(event);
     painter.end();
 }

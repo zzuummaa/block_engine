@@ -4,17 +4,14 @@
 #include "qbusline.h"
 #include "qpin.h"
 
-class QBus {
+class QBus : public QWidget {
+Q_OBJECT
 public:
-    static std::optional<QBus> concat(const QBus& lhs, const QBus& rhs);
+    static QBus* concat(const QBus* lhs, const QBus* rhs);
 
     explicit QBus(QBusLine* firstPart);
 
-    QBus(const QBus& other) = default;
-
-    QBus& operator=(const QBus&) = default;
-
-    const BusTypeInfo* getTypeInfo() const;
+    [[nodiscard]] const BusTypeInfo* getTypeInfo() const;
 
     [[nodiscard]] bool isInputLinked() const;
 
