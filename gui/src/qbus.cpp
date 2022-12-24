@@ -46,8 +46,7 @@ QBus::QBus(
     , outputs(std::move(outputs))
     , parts(std::move(parts)) { }
 
-QBus::QBus(QBusLine* firstPart) : input(nullptr) {
-    parts.push_back(firstPart);
+QBus::QBus() : input(nullptr) {
 }
 
 const BusTypeInfo* QBus::getTypeInfo() const {
@@ -81,6 +80,14 @@ bool QBus::isSuitablePin(QPin* pin) const {
     }
 }
 
+bool QBus::linkPin(QPin* newPin) {
+    if (newPin->isInput()) {
+        return linkInput(newPin);
+    } else {
+        return linkOutput(newPin);
+    }
+}
+
 bool QBus::linkInput(QPin* newInput) {
     if (!isInputLinked() && isSuitablePin(newInput)) {
         input = newInput;
@@ -107,4 +114,5 @@ bool QBus::linkPart(QBusLine* part) {
         return false;
     }
 }
+
 

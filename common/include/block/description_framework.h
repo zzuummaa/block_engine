@@ -56,6 +56,7 @@ struct InputAccessor {
     using TInstance = TInstance_;
 
     static constexpr bool hasPins = HasInputs<TDescription>::value;
+    static constexpr bool isInput = true;
 };
 
 template <typename, template <typename...> typename>

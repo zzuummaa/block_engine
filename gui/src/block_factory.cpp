@@ -6,7 +6,6 @@
 using namespace block_engine;
 using namespace block_engine::block;
 
-
 BlockInitializer::TBlock BlockInitializer::makeBlock() const {
     return blockInitializer(*this);
 }
@@ -31,31 +30,31 @@ BlockInitializer::TBlock BlockFactory::createBlockByName(const QString& block_na
 //}
 
 template<typename TPin, typename, std::enable_if_t<!std::is_base_of_v<Marker, TPin>, int> = 0>
-void createPins(PinGroupHolder& pins, bool isOptional) {
+void createPins(PinGroupHolder& pins, bool isOptional, bool isInput) {
     static_assert(!std::is_base_of_v<Marker, TPin>, "Invalid function for marker");
 
     const auto& name = BusType<TPin>().name;
-    pins = {new QPin({name}), isOptional};
+    pins = {new QPin({name}, isInput), isOptional};
 }
 
 template<typename TPin, typename, std::enable_if_t<std::is_same_v<Empty, TPin>, int> = 0>
-void createPins(PinGroupHolder&, bool) {
+void createPins(PinGroupHolder&, bool, bool) {
 }
 
 template<typename TPin, typename TInstance, std::enable_if_t<std::is_same_v<Instance, TPin>, int> = 0>
-void createPins(PinGroupHolder& pins, bool isOptional) {
+void createPins(PinGroupHolder& pins, bool isOptional, bool isInput) {
     const auto& name = BusType<TInstance>().name;
-    pins = {new QPin({name}), isOptional};
+    pins = {new QPin({name}, isInput), isOptional};
 }
 
 template<typename TPins, typename TInstance, std::enable_if_t<IsRange<TPins, Range>::value, int> = 0>
-void createPins(PinGroupHolder& pins, bool isOptional) {
+void createPins(PinGroupHolder& pins, bool isOptional, bool isInput) {
     pins = PinGroupHolder(PinGroupHolder::THolderCollection(), isOptional);
     auto& subHolders = pins.holderCollection();
 
     for (size_t i = 0; i < TPins::end; i++) {
         auto subHolder = std::make_unique<PinGroupHolder>();
-        createPins<typename TPins::TPin, TInstance>(*subHolder, i < TPins::begin);
+        createPins<typename TPins::TPin, TInstance>(*subHolder, i < TPins::begin, isInput);
         if (!subHolder->isEmpty()) {
             subHolders.push_back(std::move(subHolder));
         }
@@ -65,7 +64,7 @@ void createPins(PinGroupHolder& pins, bool isOptional) {
 template<typename TPinAccessor>
 auto createPins() {
     PinGroupHolder pins;
-    createPins<typename TPinAccessor::TPins, typename TPinAccessor::TInstance>(pins, false);
+    createPins<typename TPinAccessor::TPins, typename TPinAccessor::TInstance>(pins, false, TPinAccessor::isInput);
     return pins;
 }
 

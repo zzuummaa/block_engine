@@ -6,7 +6,7 @@
 
 #include "qpin.h"
 
-QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)) {
+QPin::QPin(BusTypeInfo info, bool isInput) : pin_info(std::move(info)), input(isInput) {
     setFixedSize(SIZE);
     setMouseTracking(true);
 
@@ -41,5 +41,9 @@ void QPin::mouseMoveEvent(QMouseEvent* event) {
     emit pinFocussed();
 
     QWidget::mouseMoveEvent(event);
+}
+
+bool QPin::isInput() const {
+    return input;
 }
 

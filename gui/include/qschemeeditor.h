@@ -43,8 +43,12 @@ public:
 
     void addBlock(QBlock* block);
     void tryAddBusLine(QPointF from, QPointF to);
+    void tryAddBusLine(QPin*, QPin*);
+    void tryAddBusLine(QPin*, QPointF);
 
 protected:
+    void addBusLine(const std::shared_ptr<QBus>& bus, QPointF from, QPointF to);
+    std::shared_ptr<QBus> concatBusses(const std::shared_ptr<QBus>& bus1, const std::shared_ptr<QBus>& bus2);
     std::pair<QGraphicsRectItem*, QGraphicsProxyWidget*> addSceneProxy(QWidget*, qreal x, qreal y);
 
     void wheelEvent ( QWheelEvent * event ) Q_DECL_OVERRIDE;
@@ -68,8 +72,10 @@ protected slots:
     void pinFocussed(QPin* pin, QRectF pinRect);
 
 private:
+    constexpr static const qreal BUS_LINE_LENGTH_THRESHOLD = 1.0;
+
     std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
-    std::map<QWidget*, QBus*> busses;
+    std::map<QWidget*, std::shared_ptr<QBus>> busses;
 
     SchemeEditorModel model;
     QPinLinkDetector pinLinker;

@@ -12,10 +12,11 @@ Q_OBJECT
 public:
     static constexpr auto SIZE = QSize(4, 4);
 
-    explicit QPin(BusTypeInfo);
+    explicit QPin(BusTypeInfo, bool);
 
     const BusTypeInfo& info() { return pin_info; }
 
+    bool isInput() const;
 protected:
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
@@ -29,4 +30,5 @@ signals:
 
 private:
     BusTypeInfo pin_info;
+    bool input;
 };

@@ -4,12 +4,14 @@
 #include "qbusline.h"
 #include "qpin.h"
 
-class QBus : public QWidget {
-Q_OBJECT
+class QBus {
 public:
     static QBus* concat(const QBus* lhs, const QBus* rhs);
 
-    explicit QBus(QBusLine* firstPart);
+    QBus();
+
+    QBus(const QBus&) = default;
+    QBus(QBus&&) = default;
 
     [[nodiscard]] const BusTypeInfo* getTypeInfo() const;
 
@@ -21,11 +23,24 @@ public:
 
     [[nodiscard]] bool isSuitablePin(QPin* pin) const;
 
-    bool linkInput(QPin* newInput);
-
-    bool linkOutput(QPin* newOutput);
+    bool linkPin(QPin* newPin);
 
     bool linkPart(QBusLine* part);
+
+    template<typename TConsumer>
+    void forEachItem(const TConsumer& consumer) {
+        if (input) {
+            consumer(input);
+        }
+
+        for (auto output: outputs) {
+            consumer(output);
+        }
+
+        for (auto part: parts) {
+            consumer(part);
+        }
+    }
 
 private:
     QPin* input;
@@ -33,4 +48,7 @@ private:
     std::vector<QBusLine*> parts;
 
     QBus(QPin* input, std::vector<QPin*> outputs, std::vector<QBusLine*> parts);
+
+    bool linkInput(QPin* newInput);
+    bool linkOutput(QPin* newOutput);
 };

@@ -11,12 +11,12 @@
 using TItemVariant = std::variant<QGraphicsItem*, QPointF, QPin*>;
 
 template<class... Ts>
-struct Visitor : Ts... {
+struct ItemVisitor : Ts... {
     using Ts::operator()...;
 };
 
 template<class... Ts>
-Visitor(Ts...) -> Visitor<Ts...>;
+ItemVisitor(Ts...) -> ItemVisitor<Ts...>;
 
 static TItemVariant getOriginal(QGraphicsItem* item, QPointF pos) {
     if (!item) {
@@ -33,7 +33,7 @@ static TItemVariant getOriginal(QGraphicsItem* item, QPointF pos) {
 }
 
 static inline QDebug operator<<(QDebug stream, const TItemVariant& original) {
-    std::visit(Visitor{
+    std::visit(ItemVisitor{
         [&](QGraphicsItem* item)  {
             stream << "unexpected";
             if (auto proxy = dynamic_cast<QGraphicsProxyWidget*>(item)) {
@@ -77,7 +77,9 @@ void QSchemeEditor::addBlock(QBlock* block) {
 
     model.addBlock(reinterpret_cast<SchemeEditorModel::TId>(block), block->info());
     block->forEachInput([&](auto pin){
-        proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin));
+        if (!proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin)).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
 
         model.addInput(
             reinterpret_cast<SchemeEditorModel::TId>(block),
@@ -85,7 +87,9 @@ void QSchemeEditor::addBlock(QBlock* block) {
             pin->info());
     });
     block->forEachOutput([&](auto pin){
-        proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin));
+        if (!proxyByPin.emplace(pin, proxy->createProxyForChildWidget(pin)).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
 
         model.addOutput(
             reinterpret_cast<SchemeEditorModel::TId>(block),
@@ -94,18 +98,139 @@ void QSchemeEditor::addBlock(QBlock* block) {
     });
 }
 
+static qreal length(QPointF vec) {
+    return std::sqrt(std::pow(vec.x(), 2) + std::pow(vec.y(), 2));
+}
+
+static QPointF pinCenter(QGraphicsProxyWidget* pin) {
+    return pin->mapToParent(pin->rect().center());
+}
+
+void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {
+    auto proxy1It = proxyByPin.find(pin1);
+    auto proxy2It = proxyByPin.find(pin2);
+    if (proxy1It == proxyByPin.end() || proxy2It == proxyByPin.end()) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
+
+    auto proxy1Center = pinCenter(proxy1It->second);
+    auto proxy2Center = pinCenter(proxy2It->second);
+    if (length(proxy2Center - proxy1Center) < BUS_LINE_LENGTH_THRESHOLD) {
+        return;
+    }
+
+    auto busIt1 = busses.find(pin1);
+    auto busIt2 = busses.find(pin2);
+
+    if (busIt1 == busses.end() && busIt2 == busses.end()) {
+        QBus bus;
+        if (!bus.linkPin(pin1) || !bus.linkPin(pin2)) {
+            return;
+        }
+
+        auto busPtr = std::make_shared<QBus>(std::move(bus));
+        if (!busses.emplace(pin1, busPtr).second
+        ||  !busses.emplace(pin2, busPtr).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
+
+        addBusLine(std::make_shared<QBus>(bus), proxy1Center, proxy2Center);
+
+    } else if (busIt1 != busses.end() && busIt2 == busses.end()) {
+        if (!busIt1->second->linkPin(pin2)) {
+            return;
+        }
+
+        if (!busses.emplace(pin2, busIt1->second).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
+
+        addBusLine(busIt1->second, proxy1Center, proxy2Center);
+
+    } else if (busIt1 == busses.end() && busIt2 != busses.end()) {
+        if (!busIt2->second->linkPin(pin1)) {
+            return;
+        }
+
+        if (!busses.emplace(pin1, busIt2->second).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
+
+        addBusLine(busIt2->second, proxy1Center, proxy2Center);
+    } else {
+        auto combinedBus = concatBusses(busIt1->second, busIt2->second);
+        if (combinedBus) {
+            addBusLine(combinedBus, proxy1Center, proxy2Center);
+        }
+    }
+}
+
+void QSchemeEditor::tryAddBusLine(QPin* pin, QPointF point) {
+    auto proxy = proxyByPin.find(pin);
+    if (proxy == proxyByPin.end()) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
+    auto proxyCenter = pinCenter(proxy->second);
+    if (length(point - proxyCenter) < BUS_LINE_LENGTH_THRESHOLD) {
+        return;
+    }
+
+    auto busIt1 = busses.find(pin);
+
+    if (busIt1 == busses.end()) {
+        tryAddBusLine(proxyCenter, point);
+    } else {
+        addBusLine(busIt1->second, proxyCenter, point);
+    }
+}
+
 void QSchemeEditor::tryAddBusLine(QPointF from, QPointF to) {
+    if (length(to - from) < BUS_LINE_LENGTH_THRESHOLD) {
+        return;
+    }
+
+    auto bus = std::make_shared<QBus>();
+    addBusLine(bus, from, to);
+}
+
+void QSchemeEditor::addBusLine(const std::shared_ptr<QBus>& bus, QPointF from, QPointF to) {
     auto diff = to - from;
-    qreal len = std::sqrt(std::pow(diff.x(), 2) + std::pow(diff.y(), 2));
+    qreal len = length(diff);
+
+    qDebug() << "QSchemeEditor::addBusLine() with len" << len;
 
     auto busLine = new QBusLine(len);
-    auto bus = new QBus(busLine);
-    busses.emplace(busLine, bus);
+    if (!bus->linkPart(busLine)) {
+        // should be linkable
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
+    if (!busses.emplace(busLine, bus).second) {
+        throw std::runtime_error(__PRETTY_FUNCTION__);
+    }
 
     auto [proxyControl, proxy] = addSceneProxy(busLine, from.x(), from.y());
 
     double angle = std::atan2(diff.y(), diff.x()) / M_PI * 180.0;
     proxyControl->setTransform(QTransform().rotate(angle));
+}
+
+std::shared_ptr<QBus> QSchemeEditor::concatBusses(const std::shared_ptr<QBus>& bus1, const std::shared_ptr<QBus>& bus2) {
+    auto combinedBus = std::shared_ptr<QBus>(QBus::concat(bus1.get(), bus2.get()));
+    if (!combinedBus) {
+        return combinedBus;
+    }
+
+    const auto eraser = [&](auto widget){ busses.erase(widget); };
+    bus1->forEachItem(eraser);
+    bus2->forEachItem(eraser);
+
+    combinedBus->forEachItem([&](auto widget){
+        if (!busses.emplace(widget, combinedBus).second) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
+        }
+    });
+
+    return combinedBus;
 }
 
 std::pair<QGraphicsRectItem*, QGraphicsProxyWidget*> QSchemeEditor::addSceneProxy(QWidget* widget, qreal x, qreal y) {
@@ -250,18 +375,18 @@ void QSchemeEditor::mouseReleaseEvent(QMouseEvent* event) {
 
         qDebug() << "movement from" << fromItem << "to" << toItem;
 
-        std::visit(Visitor{
+        std::visit(ItemVisitor{
             [&](QGraphicsItem*, QGraphicsItem*) {},
             [&](QGraphicsItem*, QPointF) {},
             [&](QGraphicsItem*, QPin*) {},
 
             [&](QPin*, QGraphicsItem*) {},
-            [&](QPin*, QPointF) {},
-            [&](QPin*, QPin*) {},
+            [&](QPin* pin, QPointF point) { tryAddBusLine(pin, point); },
+            [&](QPin* pin1, QPin* pin2) { tryAddBusLine(pin1, pin2); },
 
             [&](QPointF, QGraphicsItem*) {},
             [&](QPointF point1, QPointF point2) { tryAddBusLine(point1, point2); },
-            [&](QPointF, QPin*) {},
+            [&](QPointF point, QPin* pin) { tryAddBusLine(pin, point); },
         }, fromItem, toItem);
 
         leftPressPos = std::nullopt;
