@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
     src/scheme_editor_model.cpp
     src/qpin.cpp
     src/pin_group_holder.cpp
+    src/qbusline.cpp
+    src/qbus.cpp
     src/qblock.cpp
     src/qblock.ui
     src/qblocklist.cpp
@@ -23,6 +25,9 @@ add_executable(${PROJECT_NAME}
     include/qschemeeditor.h
     include/scheme_editor_model.h
     include/qpin.h
+    include/pin_group_holder.h
+    include/qbusline.h
+    include/qbus.h
     include/qblock.h
     include/qblocklist.h
 )

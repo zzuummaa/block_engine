@@ -2,6 +2,7 @@
 #define BLOCK_ENGINE_QSCHEMEEDITOR_H
 
 #include <QGraphicsView>
+#include "qbusline.h"
 #include "qblock.h"
 #include "scheme_editor_model.h"
 
@@ -18,9 +19,7 @@ public:
     QPinLinkDetector();
 
     void pinPressed(QPin* pin);
-
     void mouseReleased(QPoint pos);
-
     void mouseMoved(QPin* pin, QRectF pinRect);
 
     void reset();
@@ -40,6 +39,7 @@ public:
     explicit QSchemeEditor(QWidget* parent = nullptr);
 
     void addBlock(QBlock* block);
+    void addBusLine(QBusLine* busLine);
 
 protected:
     void wheelEvent ( QWheelEvent * event ) Q_DECL_OVERRIDE;

@@ -1,7 +1,3 @@
-//
-// Created by Stepan on 11.12.2022.
-//
-
 #include <qpainter.h>
 #include <qevent.h>
 #include <qdebug.h>
@@ -13,12 +9,19 @@
 QPin::QPin(BusTypeInfo info) : pin_info(std::move(info)) {
     setFixedSize(SIZE);
     setMouseTracking(true);
+
+    // TODO uncomment for transparent background, then fix "QWidget::paintEngine: Should no longer be called" message
+//    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+//    setAttribute(Qt::WA_NoSystemBackground);
+//    setAttribute(Qt::WA_TranslucentBackground);
+//    setAttribute(Qt::WA_PaintOnScreen);
+//    setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 void QPin::paintEvent(QPaintEvent* event) {
     QPainter painter;
     painter.begin(this);
-    painter.setBrush(Qt::white);
+    painter.setBrush(Qt::transparent);
     painter.drawEllipse(event->rect());
     QWidget::paintEvent(event);
     painter.end();

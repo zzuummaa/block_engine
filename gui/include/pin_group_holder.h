@@ -9,8 +9,8 @@
 
 class PinGroupHolder {
 public:
-    using TBus = QPin*;
-    using TBusCollection = std::vector<TBus>;
+    using TPin = QPin*;
+    using TPinCollection = std::vector<TPin>;
     using THolderCollection = std::vector<std::unique_ptr<PinGroupHolder>>;
 
     PinGroupHolder() : isOptional(false) {}
@@ -31,19 +31,19 @@ public:
     }
 
     [[nodiscard]] constexpr bool isBus() const noexcept {
-        return std::holds_alternative<PinGroupHolder::TBus>(value);
+        return std::holds_alternative<PinGroupHolder::TPin>(value);
     }
 
     [[nodiscard]] constexpr bool isBusCollection() const noexcept {
-        return std::holds_alternative<PinGroupHolder::TBusCollection>(value);
+        return std::holds_alternative<PinGroupHolder::TPinCollection>(value);
     }
 
     [[nodiscard]] constexpr bool isHolderCollection() const noexcept {
         return std::holds_alternative<PinGroupHolder::THolderCollection>(value);
     }
 
-    TBus bus();
-    TBusCollection& busCollection();
+    TPin bus();
+    TPinCollection& busCollection();
     THolderCollection& holderCollection();
 
     template<typename TConsumer>
@@ -67,7 +67,7 @@ public:
     }
 
 private:
-    std::variant<std::monostate, TBus, TBusCollection, THolderCollection> value;
+    std::variant<std::monostate, TPin, TPinCollection, THolderCollection> value;
     [[maybe_unused]] bool isOptional;
 
     template<typename TType>

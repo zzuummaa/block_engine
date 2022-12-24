@@ -4,12 +4,12 @@
 
 #include <pin_group_holder.h>
 
-PinGroupHolder::TBus PinGroupHolder::bus() {
-    return get<PinGroupHolder::TBus>();
+PinGroupHolder::TPin PinGroupHolder::bus() {
+    return get<PinGroupHolder::TPin>();
 }
 
-PinGroupHolder::TBusCollection& PinGroupHolder::busCollection() {
-    return get<PinGroupHolder::TBusCollection>();
+PinGroupHolder::TPinCollection& PinGroupHolder::busCollection() {
+    return get<PinGroupHolder::TPinCollection>();
 }
 
 PinGroupHolder::THolderCollection& PinGroupHolder::holderCollection() {

@@ -16,8 +16,11 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), numSchedu
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
 
-    QObject::connect(&pinLinker, &QPinLinkDetector::link, this, [](QPin* from, QPin* to){
+    QObject::connect(&pinLinker, &QPinLinkDetector::link, this, [this](QPin* from, QPin* to){
         qDebug() << "link from" << from << "to" << to;
+        if (model.addLink(reinterpret_cast<SchemeEditorModel::TId>(from), reinterpret_cast<SchemeEditorModel::TId>(to))) {
+            // TODO
+        }
     });
 }
 
@@ -54,6 +57,10 @@ void QSchemeEditor::addBlock(QBlock* block) {
             reinterpret_cast<SchemeEditorModel::TId>(pin),
             pin->info());
     });
+}
+
+void QSchemeEditor::addBusLine(QBusLine* /*busLine*/) {
+
 }
 
 void QSchemeEditor::updateSceneRect() {
