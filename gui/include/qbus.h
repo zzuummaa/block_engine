@@ -15,9 +15,9 @@ public:
 
     [[nodiscard]] const BusTypeInfo* getTypeInfo() const;
 
-    [[nodiscard]] bool isInputLinked() const;
+    [[nodiscard]] bool isOutputLinked() const;
 
-    [[nodiscard]] bool isOutputLinked(QPin* pin) const;
+    [[nodiscard]] bool isInputLinked(QPin* pin) const;
 
     [[nodiscard]] bool isPartLinked(QBusLine* part) const;
 
@@ -29,12 +29,12 @@ public:
 
     template<typename TConsumer>
     void forEachItem(const TConsumer& consumer) {
-        if (input) {
-            consumer(input);
+        if (output) {
+            consumer(output);
         }
 
-        for (auto output: outputs) {
-            consumer(output);
+        for (auto input: inputs) {
+            consumer(input);
         }
 
         for (auto part: parts) {
@@ -43,11 +43,11 @@ public:
     }
 
 private:
-    QPin* input;
-    std::vector<QPin*> outputs;
+    QPin* output;
+    std::vector<QPin*> inputs;
     std::vector<QBusLine*> parts;
 
-    QBus(QPin* input, std::vector<QPin*> outputs, std::vector<QBusLine*> parts);
+    QBus(QPin* output, std::vector<QPin*> inputs, std::vector<QBusLine*> parts);
 
     bool linkInput(QPin* newInput);
     bool linkOutput(QPin* newOutput);

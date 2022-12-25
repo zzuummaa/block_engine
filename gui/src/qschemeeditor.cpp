@@ -103,7 +103,7 @@ static qreal length(QPointF vec) {
 }
 
 static QPointF pinCenter(QGraphicsProxyWidget* pin) {
-    return pin->mapToParent(pin->rect().center());
+    return pin->mapToScene(pin->rect().center());
 }
 
 void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {

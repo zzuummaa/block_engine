@@ -11,18 +11,18 @@ QBus* QBus::concat(const QBus* lhs, const QBus* rhs) {
         return nullptr;
     }
 
-    if (lhs->input && rhs->input) {
+    if (lhs->output && rhs->output) {
         return nullptr;
     }
-    const auto& input = lhs->input ? lhs->input : rhs->input;
+    const auto& input = lhs->output ? lhs->output : rhs->output;
 
     // Expect that output has only one linked bus
     std::vector<QPin*> outputs;
-    std::copy(lhs->outputs.begin(), lhs->outputs.end(), std::back_inserter(outputs));
-    std::copy(rhs->outputs.begin(), rhs->outputs.end(), std::back_inserter(outputs));
+    std::copy(lhs->inputs.begin(), lhs->inputs.end(), std::back_inserter(outputs));
+    std::copy(rhs->inputs.begin(), rhs->inputs.end(), std::back_inserter(outputs));
     std::sort(outputs.begin(), outputs.end());
     outputs.erase(std::unique(outputs.begin(), outputs.end()), outputs.end());
-    if (outputs.size() != lhs->outputs.size() + rhs->outputs.size()) {
+    if (outputs.size() != lhs->inputs.size() + rhs->inputs.size()) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 
@@ -39,32 +39,32 @@ QBus* QBus::concat(const QBus* lhs, const QBus* rhs) {
 }
 
 QBus::QBus(
-    QPin* input,
-    std::vector<QPin*> outputs,
+    QPin* output,
+    std::vector<QPin*> inputs,
     std::vector<QBusLine*> parts)
-    : input(input)
-    , outputs(std::move(outputs))
+    : output(output)
+    , inputs(std::move(inputs))
     , parts(std::move(parts)) { }
 
-QBus::QBus() : input(nullptr) {
+QBus::QBus() : output(nullptr) {
 }
 
 const BusTypeInfo* QBus::getTypeInfo() const {
-    if (isInputLinked()) {
-        return &input->info();
-    } else if (!outputs.empty()) {
-        return &outputs[0]->info();
+    if (isOutputLinked()) {
+        return &output->info();
+    } else if (!inputs.empty()) {
+        return &inputs[0]->info();
     } else {
         return nullptr;
     }
 }
 
-bool QBus::isInputLinked() const {
-    return input;
+bool QBus::isOutputLinked() const {
+    return output;
 }
 
-bool QBus::isOutputLinked(QPin* pin) const {
-    return std::count(outputs.begin(), outputs.end(), pin) > 0;
+bool QBus::isInputLinked(QPin* pin) const {
+    return std::count(inputs.begin(), inputs.end(), pin) > 0;
 }
 
 bool QBus::isPartLinked(QBusLine* part) const {
@@ -88,18 +88,18 @@ bool QBus::linkPin(QPin* newPin) {
     }
 }
 
-bool QBus::linkInput(QPin* newInput) {
-    if (!isInputLinked() && isSuitablePin(newInput)) {
-        input = newInput;
+bool QBus::linkOutput(QPin* newOutput) {
+    if (!isOutputLinked() && isSuitablePin(newOutput)) {
+        output = newOutput;
         return true;
     } else {
         return false;
     }
 }
 
-bool QBus::linkOutput(QPin* newOutput) {
-    if (!isOutputLinked(newOutput)) {
-        outputs.push_back(newOutput);
+bool QBus::linkInput(QPin* newInput) {
+    if (!isInputLinked(newInput)) {
+        inputs.push_back(newInput);
         return true;
     } else {
         return false;
