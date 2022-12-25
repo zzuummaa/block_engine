@@ -13,7 +13,7 @@ class QBlock;
 class QBlock : public QWidget {
 Q_OBJECT
 public:
-    explicit QBlock(BlockTypeInfo info, PinGroupHolder inputs);
+    explicit QBlock(BlockTypeInfo info, PinGroupHolder inputs, PinGroupHolder outputs);
 
     const BlockTypeInfo& info() { return block_info; }
 
@@ -42,6 +42,7 @@ private:
     PinGroupHolder outputs;
 
     void addInput(QPin*);
+    void addOutput(QPin*);
 };
 
 #endif //BLOCK_ENGINE_QBLOCK_H

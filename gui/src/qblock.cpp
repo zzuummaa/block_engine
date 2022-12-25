@@ -8,20 +8,30 @@
 
 QBlock::QBlock(
         BlockTypeInfo info,
-        PinGroupHolder inputs_)
+        PinGroupHolder inputs_,
+        PinGroupHolder outputs_)
     : ui(new Ui::QBlock)
     , block_info(std::move(info))
-    , inputs(std::move(inputs_)) {
+    , inputs(std::move(inputs_))
+    , outputs(std::move(outputs_)) {
     ui->setupUi(this);
 
     int inputsCount = 0;
-    inputs.forEach([&](QPin* pin){
+    forEachInput([&](QPin* pin){
         inputsCount++;
         addInput(pin);
     });
 
+    int outputsCount = 0;
+    forEachOutput([&](QPin* pin){
+        outputsCount++;
+        addOutput(pin);
+    });
+
+    int maxCount = std::max(inputsCount, outputsCount);
+
     const auto nameSize = ui->nameLabel->fontMetrics().boundingRect(block_info.name);
-    auto height = std::max(nameSize.height(), inputsCount * (QPin::SIZE.height() + 5) + 5);
+    auto height = std::max(nameSize.height(), maxCount * (QPin::SIZE.height() + 5) + 5);
 
     setFixedSize(nameSize.width() + 30, height);
     setContentsMargins(0, 0, 0, 0);
@@ -43,6 +53,12 @@ void QBlock::paintEvent(QPaintEvent *event) {
 
 void QBlock::addInput(QPin* pin) {
     ui->inputsLayout->addWidget(pin);
+    QObject::connect(pin, &QPin::pinPressed, this, [this, pin](){ emit pinPressed(pin); });
+    QObject::connect(pin, &QPin::pinFocussed, this, [this, pin](){ emit pinFocussed(pin); });
+}
+
+void QBlock::addOutput(QPin* pin) {
+    ui->outputsLayout->addWidget(pin);
     QObject::connect(pin, &QPin::pinPressed, this, [this, pin](){ emit pinPressed(pin); });
     QObject::connect(pin, &QPin::pinFocussed, this, [this, pin](){ emit pinFocussed(pin); });
 }

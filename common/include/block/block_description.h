@@ -23,6 +23,8 @@ struct ConsoleBlockDescription {
 struct ConstBlockDescription {
     using TInstances = TCommonTypes;
 
+    using TOutputs = Instance;
+
     const char* name = "const";
 };
 
@@ -38,6 +40,8 @@ struct SumBlockDescription {
     using TInstances = TCommonTypes;
 
     using TInputs = Range<2, 10, Instance>;
+
+    using TOutputs = Instance;
 
     const char* name = "sum";
 };

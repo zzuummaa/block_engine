@@ -17,6 +17,7 @@ struct BlockInitializer {
 
     std::function<TBlock(const BlockInitializer&)> blockInitializer;
     std::function<TPinCollection()> inputsInitializer;
+    std::function<TPinCollection()> outputsInitializer;
 };
 
 struct BlockFactory {

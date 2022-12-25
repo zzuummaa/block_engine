@@ -59,10 +59,23 @@ struct InputAccessor {
     static constexpr bool isInput = true;
 };
 
-template <typename, template <typename...> typename>
-struct IsTypeInstance : public std::false_type {};
+template<typename TDescription, typename = void>
+struct HasOutputs : std::false_type {
+    using TPins = Empty;
+};
 
-template <typename ...TArgs, template <typename...> typename TType>
-struct IsTypeInstance<TType<TArgs...>, TType> : public std::true_type {};
+template<typename TDescription>
+struct HasOutputs<TDescription, std::void_t<typename TDescription::TOutputs>> : std::true_type {
+    using TPins = typename TDescription::TOutputs;
+};
+
+template<typename TDescription, typename TInstance_>
+struct OutputAccessor {
+    using TPins = typename HasOutputs<TDescription>::TPins;
+    using TInstance = TInstance_;
+
+    static constexpr bool hasPins = HasOutputs<TDescription>::value;
+    static constexpr bool isInput = false;
+};
 
 }

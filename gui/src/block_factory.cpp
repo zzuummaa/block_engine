@@ -24,11 +24,6 @@ BlockInitializer::TBlock BlockFactory::createBlockByName(const QString& block_na
     return it != map.end() ? it->second.makeBlock() : throw std::runtime_error(__PRETTY_FUNCTION__);
 }
 
-//template<typename = void, typename>
-//void createPins(BusGroupHolder& pins, bool) {
-//
-//}
-
 template<typename TPin, typename, std::enable_if_t<!std::is_base_of_v<Marker, TPin>, int> = 0>
 void createPins(PinGroupHolder& pins, bool isOptional, bool isInput) {
     static_assert(!std::is_base_of_v<Marker, TPin>, "Invalid function for marker");
@@ -75,10 +70,13 @@ auto makeBlockInitializer(const QString& block_name, TArgs ...args) {
         info,
         BlockInitializer{
             [=](const auto& initializer) {
-                return new TBlock(info, initializer.inputsInitializer(), args...);
+                return new TBlock(info, initializer.inputsInitializer(), initializer.outputsInitializer(), args...);
             },
             [=]() {
                 return createPins<InputAccessor<TDescription, TInstance>>();
+            },
+            [=]() {
+                return createPins<OutputAccessor<TDescription, TInstance>>();
             }
         });
 }
