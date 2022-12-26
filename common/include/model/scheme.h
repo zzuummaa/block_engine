@@ -9,24 +9,31 @@
 #include <set>
 #include <string>
 
+#include "block_type_info.h"
 #include "block.h"
 #include "bus.h"
 
 namespace block_engine::model {
 
 struct Scheme {
-    std::map<int, std::string> types;
-    std::map<int, std::string> block_types;
-    std::map<int, Block> blocks;
-    std::set<Bus, BusLessByBlockId> busses;
+    std::map<TTypeId, std::string> types;
+    std::map<TBlockTypeId, std::string> block_types;
+    std::map<TPinId, Pin> pins;
+    std::map<TBlockId, Block> blocks;
+    std::set<Link> links;
 
-    bool addType(int type_id, const std::string& type);
-    [[nodiscard]] std::optional<std::string> getType(int type_id) const;
-    bool addBlockType(int block_id, const std::string& block_type);
-    [[nodiscard]] std::optional<std::string> getBlockType(int block_type_id) const;
-    bool addBlock(int block_id, const Block& block);
-    [[nodiscard]] std::optional<Block> getBlock(int block_id) const;
-    bool addBus(const Bus& link);
+    bool addType(TTypeId id, const std::string& type);
+    [[nodiscard]] std::optional<std::string> getType(TTypeId id) const;
+    [[nodiscard]] std::optional<std::string> getTypeByPinId(TPinId id) const;
+    bool addBlockType(TBlockTypeId id, const std::string& block_type);
+    [[nodiscard]] std::optional<std::string> getBlockType(TBlockTypeId id) const;
+    bool addBlock(TBlockId id, const Block& block);
+    [[nodiscard]] std::optional<Block> getBlock(TBlockId id) const;
+    [[nodiscard]] std::optional<Block> getBlockByPinId(TPinId id) const;
+    bool addLink(const Link& link);
+
+private:
+    std::map<TPinId, TBlockId> blockIdByPinId;
 };
 
 }

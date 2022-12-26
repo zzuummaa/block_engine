@@ -11,22 +11,26 @@
 
 namespace block_engine::core {
 
+struct Connector;
+
+using ConnectorPair = std::pair<Connector, Connector>;
+
 struct Connector : private std::vector<BusPtr> {
-    typedef typename BusPtr::element_type TBus;
+    using TBus = BusPtr::element_type;
 
-    static const Connector& input(const std::pair<Connector, Connector>& pair) {
+    static const Connector& input(const ConnectorPair& pair) {
         return pair.first;
     }
 
-    static Connector& input(std::pair<Connector, Connector>& pair) {
+    static Connector& input(ConnectorPair& pair) {
         return pair.first;
     }
 
-    static const Connector& output(const std::pair<Connector, Connector>& pair) {
+    static const Connector& output(const ConnectorPair& pair) {
         return pair.second;
     }
 
-    static Connector& output(std::pair<Connector, Connector>& pair) {
+    static Connector& output(ConnectorPair& pair) {
         return pair.second;
     }
 
@@ -50,9 +54,13 @@ struct Connector : private std::vector<BusPtr> {
         return *at(n);
     }
 
-    void setBusIfEmptyOrError(size_t n, BusPtr bus) {
+    void setBus(size_t n, BusPtr bus) {
         if (at(n)) throw std::invalid_argument(__PRETTY_FUNCTION__);
         at(n) = std::move(bus);
+    }
+
+    bool isLinked() const {
+        return std::all_of(begin(), end(), [](const auto& bus){ return bus.get() != nullptr; });
     }
 };
 

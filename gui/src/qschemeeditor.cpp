@@ -115,7 +115,7 @@ void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {
 
     auto proxy1Center = pinCenter(proxy1It->second);
     auto proxy2Center = pinCenter(proxy2It->second);
-    if (length(proxy2Center - proxy1Center) < BUS_LINE_LENGTH_THRESHOLD) {
+    if (length(proxy2Center - proxy1Center) < QBusLine::MIN_BUS_LINE_LENGTH) {
         return;
     }
 
@@ -171,7 +171,7 @@ void QSchemeEditor::tryAddBusLine(QPin* pin, QPointF point) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
     auto proxyCenter = pinCenter(proxy->second);
-    if (length(point - proxyCenter) < BUS_LINE_LENGTH_THRESHOLD) {
+    if (length(point - proxyCenter) < QBusLine::MIN_BUS_LINE_LENGTH) {
         return;
     }
 
@@ -185,7 +185,7 @@ void QSchemeEditor::tryAddBusLine(QPin* pin, QPointF point) {
 }
 
 void QSchemeEditor::tryAddBusLine(QPointF from, QPointF to) {
-    if (length(to - from) < BUS_LINE_LENGTH_THRESHOLD) {
+    if (length(to - from) < QBusLine::MIN_BUS_LINE_LENGTH) {
         return;
     }
 

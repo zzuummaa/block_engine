@@ -70,7 +70,7 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="file">
     <property name="title">
      <string>Файл</string>
     </property>
@@ -79,7 +79,14 @@
     <addaction name="action_save"/>
     <addaction name="action_save_as"/>
    </widget>
-   <addaction name="menu"/>
+   <widget class="QMenu" name="run">
+    <property name="title">
+     <string>Выполнить</string>
+    </property>
+    <addaction name="action_start"/>
+   </widget>
+   <addaction name="file"/>
+   <addaction name="run"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_open">
@@ -100,6 +107,11 @@
   <action name="action_save_as">
    <property name="text">
     <string>Сохранить как</string>
+   </property>
+  </action>
+  <action name="action_start">
+   <property name="text">
+    <string>Старт</string>
    </property>
   </action>
  </widget>

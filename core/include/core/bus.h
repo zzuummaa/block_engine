@@ -12,6 +12,8 @@
 
 #include "type_info.h"
 
+namespace block_engine::core {
+
 struct Bus {
     TypeInfo type_info;
     std::shared_ptr<void> data_;
@@ -36,13 +38,13 @@ struct Bus {
     }
 };
 
-namespace block_engine::core {
-    typedef std::shared_ptr<Bus> BusPtr;
+using BusPtr = std::shared_ptr<Bus>;
 
-    template<typename... Args>
-    BusPtr makeBusPtr(Args&&... args) {
-        return std::make_shared<Bus>(std::forward<Args>(args)...);
-    }
+template<typename... Args>
+BusPtr makeBusPtr(Args&&... args) {
+    return std::make_shared<Bus>(std::forward<Args>(args)...);
+}
+
 }
 
 #endif //MODERN_CPP_DESIGN_BUS_H

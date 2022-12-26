@@ -1,5 +1,11 @@
 #include "scheme_editor_model.h"
 
+SchemeEditorModel::SchemeEditorModel()
+//    : nextTypeId(1)
+//    , nextBlockTypeId(1)
+//    , nextBlockId(1)
+{}
+
 void SchemeEditorModel::addBlock(TId id, const BlockTypeInfo& info) {
     if (!blocks.emplace(id, info).second) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
@@ -39,8 +45,8 @@ bool SchemeEditorModel::addLink(TId fromPinId, TId toPinId) {
         throw std::runtime_error(__PRETTY_FUNCTION__);
     }
 
-    long inputId;
-    long outputId;
+    TId inputId;
+    TId outputId;
 
     if (inputs.count(fromPinId)) {
         inputId = fromPinId;
@@ -64,3 +70,4 @@ bool SchemeEditorModel::addLink(TId fromPinId, TId toPinId) {
 
     return true;
 }
+

@@ -5,13 +5,47 @@
 #ifndef BLOCK_ENGINE_BUS_H
 #define BLOCK_ENGINE_BUS_H
 
+#include <cstdint>
 #include <vector>
 
 namespace block_engine::model {
 
+class PinId;
+
+using TPinId = PinId;
+using TPinTypeId = int;
+
+class PinId {
+    int64_t id;
+
+public:
+    explicit PinId(long id) : id(id) {}
+
+    PinId(int blockId, bool isInput, int pinIdx);
+
+//    PinId(const PinId&) = default;
+//
+//    PinId& operator=(const PinId&) = default;
+
+    [[nodiscard]] int getBlockId() const {
+        return static_cast<int>(id >> 31);
+    }
+
+    [[nodiscard]] int getPinIdx() const {
+        return static_cast<int>(id & ~(0x1FFFFll << 30));
+    }
+
+    friend bool operator<(const PinId& lhs, const PinId& rhs);
+};
+
 struct Pin {
-    int block_id{};
-    int pin_idx{};
+    TPinId id;
+    TPinTypeId typeId;
+};
+
+struct Link {
+    TPinId output;
+    TPinId input;
 };
 
 struct Bus {
@@ -20,21 +54,9 @@ struct Bus {
     std::vector<Pin> dests;
 };
 
-bool operator<(const Pin &lhs, const Pin &rhs);
+bool operator<(const Pin& lhs, const Pin& rhs);
 
-struct BusLessByBlockId {
-    bool operator()(const Bus& lhs, const Bus& rhs) const {
-        if (lhs.type_id < rhs.type_id)
-            return true;
-        if (rhs.type_id < lhs.type_id)
-            return false;
-        if (lhs.src < rhs.src)
-            return true;
-        if (rhs.src < lhs.src)
-            return false;
-        return lhs.dests < rhs.dests;
-    }
-};
+bool operator<(const Link& lhs, const Link& rhs);
 
 }
 

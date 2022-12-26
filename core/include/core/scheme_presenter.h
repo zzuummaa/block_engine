@@ -15,52 +15,45 @@
 namespace block_engine::core {
 
 struct DefaultConnectionPolicy {
-    typedef Connector TConnector;
 
     explicit DefaultConnectionPolicy(BusFactory bus_factory) : bus_factory(std::move(bus_factory)) {}
 
-    auto makeLinkBusMapping(const model::Scheme& scheme) {
-        std::map<model::Bus, BusPtr, model::BusLessByBlockId> link_bus_mapping;
-
-        for (const auto& bus: scheme.busses) {
-            auto it = link_bus_mapping.find(bus);
-            if (it != link_bus_mapping.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-
-            const auto& type = scheme.types.find(bus.type_id);
-            if (type == scheme.types.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-            link_bus_mapping.emplace(bus, bus_factory.createBusPtrByName(type->second));
-        }
-
-        return link_bus_mapping;
-    }
-
     auto connectors(const model::Scheme& scheme) {
-        std::map<int, std::pair<TConnector, TConnector>> conns;
+        std::map<model::TBlockId, ConnectorPair> conns;
+        std::map<model::TPinId, BusPtr> busByOutput;
 
         for (const auto& [id, block]: scheme.blocks) {
             const auto& [_, is_ok] = conns.emplace(
                 std::remove_const<decltype(id)>::type(id),
-                std::make_pair(TConnector(block.input_count), TConnector(block.output_count))
+                std::make_pair(Connector(block.inputs.size()), Connector(block.outputs.size()))
             );
             if (!is_ok) throw std::runtime_error(__PRETTY_FUNCTION__);
         }
 
-        auto link_bus_mapping = makeLinkBusMapping(scheme);
+        for (const auto& link : scheme.links) {
+            const auto busIt = busByOutput.find(link.output);
 
-        for (const auto& bus: scheme.busses) {
-            auto src_block_it = conns.find(bus.src.block_id);
-            if (src_block_it == conns.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-            auto& out_connector = TConnector::output(src_block_it->second);
-
-            out_connector.setBusIfEmptyOrError(bus.src.pin_idx, link_bus_mapping[bus]);
-
-            for (auto& dest_pin : bus.dests) {
-                auto dst_block_it = conns.find(dest_pin.block_id);
-                if (dst_block_it == conns.end()) throw std::invalid_argument(__PRETTY_FUNCTION__);
-                auto& in_connector = TConnector::input(dst_block_it->second);
-
-                in_connector.setBusIfEmptyOrError(dest_pin.pin_idx, link_bus_mapping[bus]);
+            BusPtr bus;
+            if (busIt == busByOutput.end()) {
+                const auto type = scheme.getTypeByPinId(link.output);
+                if (!type) throw std::invalid_argument(__PRETTY_FUNCTION__);
+                bus = busByOutput.emplace(link.output, bus_factory.createBusPtrByName(*type)).first->second;
+            } else {
+                bus = busIt->second;
             }
+
+            auto outputConnectorPair = conns.find(link.output.getBlockId());
+            if (outputConnectorPair == conns.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
+            Connector::output(outputConnectorPair->second).setBus(link.output.getPinIdx(), bus);
+
+            auto inputConnectorPair = conns.find(link.input.getBlockId());
+            if (inputConnectorPair == conns.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
+            Connector::input(inputConnectorPair->second).setBus(link.input.getPinIdx(), bus);
+        }
+
+        for (const auto& [_, connectorPair] : conns) {
+            if (!Connector::input(connectorPair).isLinked()
+            ||  !Connector::output(connectorPair).isLinked()) throw std::runtime_error(__PRETTY_FUNCTION__);
         }
 
         return conns;

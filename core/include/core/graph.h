@@ -12,110 +12,55 @@
 
 namespace block_engine::graph {
 
-struct PinIterator {
-    typedef decltype(model::Scheme::busses.begin()) TBusIterator;
-    typedef decltype(model::Bus::dests.cbegin()) TDestIterator;
+void dfs(
+    model::TBlockId blockId,
+    const std::map<model::TBlockId, std::vector<model::TBlockId>>& adjList,
+    std::set<model::TBlockId>& isVisit,
+    std::vector<model::TBlockId>& sequence) {
 
-    explicit PinIterator(TBusIterator bus_iterator_begin, TBusIterator bus_iterator_end, TDestIterator dest_iterator)
-        : bus_iterator_begin(bus_iterator_begin), bus_iterator_end(bus_iterator_end), dest_iterator(dest_iterator) {}
+    if (!isVisit.emplace(blockId).second) return;
 
-    PinIterator operator++() {
-        if (bus_iterator_begin == bus_iterator_end) throw std::runtime_error(__PRETTY_FUNCTION__);
+    const auto it = adjList.find(blockId);
+    if (it == adjList.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
 
-        if (++dest_iterator == bus_iterator_begin->dests.end()) {
-            return PinIterator(++bus_iterator_begin, bus_iterator_end, bus_iterator_begin->dests.begin());
-        } else {
-            return PinIterator(bus_iterator_begin, bus_iterator_end, dest_iterator);
-        }
-    }
-    model::Pin operator*() const {
-        if (bus_iterator_begin == bus_iterator_end) throw std::runtime_error(__PRETTY_FUNCTION__);
-        return *dest_iterator;
+    for (const auto& nextBlockId : it->second) {
+        dfs(nextBlockId, adjList, isVisit, sequence);
     }
 
-    const model::Pin* operator->() const {
-        if (bus_iterator_begin == bus_iterator_end) throw std::runtime_error(__PRETTY_FUNCTION__);
-        return dest_iterator.base();
-    }
-
-    friend bool operator==(const PinIterator& lhs, const PinIterator& rhs) {
-        if (lhs.bus_iterator_begin == lhs.bus_iterator_end || rhs.bus_iterator_begin == rhs.bus_iterator_end) {
-            return lhs.bus_iterator_begin == rhs.bus_iterator_begin;
-        } else {
-            return lhs.bus_iterator_begin == rhs.bus_iterator_begin && lhs.dest_iterator == rhs.dest_iterator;
-        }
-    }
-    friend bool operator!=(const PinIterator& lhs, const PinIterator& rhs) {
-        return !(lhs == rhs);
-    }
-
-private:
-    TBusIterator bus_iterator_begin;
-    TBusIterator bus_iterator_end;
-    TDestIterator dest_iterator;
-
-};
-
-struct DefaultSchemeExtractorPolicy {
-    typedef decltype(model::Scheme().blocks)::key_type TBlockKey;
-
-    static size_t blocksCount(const model::Scheme& scheme) {
-        return scheme.blocks.size();
-    }
-
-    static auto blocksBegin(const model::Scheme& scheme) {
-        return scheme.blocks.begin();
-    }
-
-    static auto blocksEnd(const model::Scheme& scheme) {
-        return scheme.blocks.end();
-    }
-
-    static auto pinsBegin(const model::Scheme& scheme, const TBlockKey& id) {
-        auto begin_it = scheme.busses.lower_bound({ .src = { .block_id = id } });
-        return PinIterator(begin_it, scheme.busses.end(), begin_it->dests.begin());
-    }
-
-    static auto pinsEnd(const model::Scheme& scheme, const TBlockKey& id) {
-        auto end_it = scheme.busses.lower_bound({ .src = { .block_id = id + 1 } });
-        return PinIterator(end_it, scheme.busses.end(), end_it->dests.begin());
-    }
-
-    static TBlockKey blockKey(const model::Pin& pin) {
-        return pin.block_id;
-    }
-
-    static TBlockKey blockKey(const std::pair<TBlockKey, model::Block>& pair) {
-        return pair.first;
-    }
-};
-
-template<typename TScheme, typename TExtractorPolicy>
-void dfs(typename TExtractorPolicy::TBlockKey blockKey,
-         const TScheme& scheme,
-         std::set<typename TExtractorPolicy::TBlockKey> &is_visit,
-         std::vector<typename TExtractorPolicy::TBlockKey> &sequence) {
-
-    if (!is_visit.emplace(blockKey).second) return;
-
-    for (auto it = TExtractorPolicy::pinsBegin(scheme, blockKey); it != TExtractorPolicy::pinsEnd(scheme, blockKey); ++it) {
-        dfs<TScheme, TExtractorPolicy>(TExtractorPolicy::blockKey(*it), scheme, is_visit, sequence);
-    }
-
-    sequence.push_back(blockKey);
+    sequence.push_back(blockId);
 }
 
-template<typename TScheme, typename TExtractorPolicy = DefaultSchemeExtractorPolicy>
-std::vector<typename TExtractorPolicy::TBlockKey> topologySort(const TScheme& scheme) {
-    auto blocksCount = TExtractorPolicy::blocksCount(scheme);
+std::vector<model::TBlockId> topologySort(const model::Scheme& scheme) {
+    std::map<model::TBlockId, std::vector<model::TBlockId>> adjList;
 
-    std::vector<typename TExtractorPolicy::TBlockKey> sequence;
-    sequence.reserve(blocksCount);
+    for (const auto& block : scheme.blocks) {
+        adjList.emplace(block.second.id, std::vector<model::TBlockId>());
+    }
 
-    std::set<typename TExtractorPolicy::TBlockKey> is_visit;
+    for (const auto& link : scheme.links) {
+        auto fromBlock = scheme.getBlockByPinId(link.output);
+        auto toBlock = scheme.getBlockByPinId(link.input);
 
-    for (auto it = TExtractorPolicy::blocksBegin(scheme); it != TExtractorPolicy::blocksEnd(scheme); it++) {
-        dfs<TScheme, TExtractorPolicy>(TExtractorPolicy::blockKey(*it), scheme, is_visit, sequence);
+        if (!fromBlock || !toBlock) throw std::runtime_error(__PRETTY_FUNCTION__);
+
+        auto it = adjList.find(fromBlock->id);
+        if (it == adjList.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
+
+        it->second.push_back(toBlock->id);
+    }
+
+    for (auto& [_, adj] : adjList) {
+        std::sort(adj.begin(), adj.end());
+        adj.erase(std::unique(adj.begin(), adj.end()), adj.end());
+    }
+
+    std::vector<model::TBlockId> sequence;
+    sequence.reserve(scheme.blocks.size());
+
+    std::set<model::TBlockId> isVisit;
+
+    for (const auto& [blockId, adj] : adjList) {
+        dfs(blockId, adjList, isVisit, sequence);
     }
 
     std::reverse(sequence.begin(), sequence.end());

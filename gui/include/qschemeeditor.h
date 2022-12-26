@@ -72,8 +72,6 @@ protected slots:
     void pinFocussed(QPin* pin, QRectF pinRect);
 
 private:
-    constexpr static const qreal BUS_LINE_LENGTH_THRESHOLD = 1.0;
-
     std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
     std::map<QWidget*, std::shared_ptr<QBus>> busses;
 
