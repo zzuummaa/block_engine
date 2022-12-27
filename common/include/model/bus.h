@@ -16,24 +16,16 @@ using TPinId = PinId;
 using TPinTypeId = int;
 
 class PinId {
-    int64_t id;
+    uint64_t id;
 
 public:
     explicit PinId(long id) : id(id) {}
 
     PinId(int blockId, bool isInput, int pinIdx);
 
-//    PinId(const PinId&) = default;
-//
-//    PinId& operator=(const PinId&) = default;
+    [[nodiscard]] int getBlockId() const;
 
-    [[nodiscard]] int getBlockId() const {
-        return static_cast<int>(id >> 31);
-    }
-
-    [[nodiscard]] int getPinIdx() const {
-        return static_cast<int>(id & ~(0x1FFFFll << 30));
-    }
+    [[nodiscard]] int getPinIdx() const;
 
     friend bool operator<(const PinId& lhs, const PinId& rhs);
 };

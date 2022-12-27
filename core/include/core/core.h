@@ -17,6 +17,8 @@ class Core : public ICoreApiServerHandler {
 public:
     explicit Core(std::shared_ptr<ICalcEngineEventHandler> event_handler) : event_handler(std::move(event_handler)) {}
 
+    virtual ~Core() = default;
+
     void onSetScheme(const model::Scheme &scheme) override {
         if (is_calcing) throw std::invalid_argument(__PRETTY_FUNCTION__);
         calc_engine = std::make_shared<CalcEngine>(scheme, event_handler);

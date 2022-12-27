@@ -12,7 +12,7 @@
 
 namespace block_engine::graph {
 
-void dfs(
+inline void dfs(
     model::TBlockId blockId,
     const std::map<model::TBlockId, std::vector<model::TBlockId>>& adjList,
     std::set<model::TBlockId>& isVisit,
@@ -30,10 +30,10 @@ void dfs(
     sequence.push_back(blockId);
 }
 
-std::vector<model::TBlockId> topologySort(const model::Scheme& scheme) {
+inline std::vector<model::TBlockId> topologySort(const model::Scheme& scheme) {
     std::map<model::TBlockId, std::vector<model::TBlockId>> adjList;
 
-    for (const auto& block : scheme.blocks) {
+    for (const auto& block : scheme.getBlocks()) {
         adjList.emplace(block.second.id, std::vector<model::TBlockId>());
     }
 
@@ -55,7 +55,7 @@ std::vector<model::TBlockId> topologySort(const model::Scheme& scheme) {
     }
 
     std::vector<model::TBlockId> sequence;
-    sequence.reserve(scheme.blocks.size());
+    sequence.reserve(scheme.getBlocks().size());
 
     std::set<model::TBlockId> isVisit;
 

@@ -59,7 +59,7 @@ struct Connector : private std::vector<BusPtr> {
         at(n) = std::move(bus);
     }
 
-    bool isLinked() const {
+    [[nodiscard]] bool isLinked() const {
         return std::all_of(begin(), end(), [](const auto& bus){ return bus.get() != nullptr; });
     }
 };

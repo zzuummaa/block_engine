@@ -31,7 +31,7 @@ struct CoreEvent : Event {
     CoreEvent(int block_id, CoreEventSubType sub_type) : Event(EventType::Core), block_id(block_id), sub_type(sub_type) {}
 };
 
-std::ostream &operator<<( std::ostream &output, const CoreEventSubType sub_type) {
+inline std::ostream &operator<<( std::ostream &output, const CoreEventSubType sub_type) {
     switch (sub_type) {
         case CoreEventSubType::Start:
             output << "Start";
@@ -45,7 +45,7 @@ std::ostream &operator<<( std::ostream &output, const CoreEventSubType sub_type)
     return output;
 }
 
-std::ostream &operator<<( std::ostream &output, const CoreEvent& event) {
+inline std::ostream &operator<<( std::ostream &output, const CoreEvent& event) {
     output << "CoreEvent{block_id=" << event.block_id << ", sub_type=" << event.sub_type << "}";
     return output;
 }

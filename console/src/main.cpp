@@ -10,23 +10,6 @@
 
 using namespace block_engine::core;
 
-struct CoutPrintEventHandler : public ICalcEngineEventHandler {
-    std::shared_ptr<std::atomic_bool> is_end;
-
-    explicit CoutPrintEventHandler(std::shared_ptr<std::atomic_bool> is_end) : is_end(std::move(is_end)) {}
-
-    virtual ~CoutPrintEventHandler() = default;
-
-    void notifyError(const CoreError& error) override {
-        std::cout << error << std::endl;
-    }
-
-    void notifyEvent(const CoreEvent& event) override {
-        std::cout << event << std::endl;
-        if (event.sub_type == CoreEventSubType::Stop) *is_end = true;
-    }
-};
-
 int main() {
     std::ifstream fs("test.json");
 	if (!fs.good()) {

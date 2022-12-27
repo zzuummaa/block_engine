@@ -8,6 +8,8 @@
 
 #include "qschemeeditor.h"
 
+using namespace block_engine;
+
 using TItemVariant = std::variant<QGraphicsItem*, QPointF, QPin*>;
 
 template<class... Ts>

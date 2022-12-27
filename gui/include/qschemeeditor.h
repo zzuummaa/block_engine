@@ -39,6 +39,8 @@ private:
 class QSchemeEditor : public QGraphicsView  {
     Q_OBJECT
 public:
+    block_engine::SchemeEditorModel model;
+
     explicit QSchemeEditor(QWidget* parent = nullptr);
 
     void addBlock(QBlock* block);
@@ -75,7 +77,6 @@ private:
     std::map<QPin*, QGraphicsProxyWidget*> proxyByPin;
     std::map<QWidget*, std::shared_ptr<QBus>> busses;
 
-    SchemeEditorModel model;
     QPinLinkDetector pinLinker;
 
     std::optional<QPoint> leftPressPos;

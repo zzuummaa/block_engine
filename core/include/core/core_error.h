@@ -18,15 +18,9 @@ struct CoreError {
     std::string reason;
 };
 
-std::ostream &operator<<( std::ostream &output, const CoreErrorType &/*error_type*/) {
-    output << "None";
-    return output;
-}
+std::ostream& operator<<(std::ostream& output, const CoreErrorType& error_type);
 
-std::ostream &operator<<( std::ostream &output, const CoreError &error) {
-    output << "CoreError{type=" << error.type << ", reason=" << error.reason << "}";
-    return output;
-}
+std::ostream& operator<<(std::ostream& output, const CoreError& error);
 
 }
 

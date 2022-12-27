@@ -2,6 +2,7 @@
 #define BLOCK_ENGINE_QBLOCKENGINEWINDOW_H
 
 #include <QMainWindow>
+#include <core/core.h>
 
 namespace Ui {
 class BlockEngineWindow;
@@ -17,6 +18,7 @@ public:
 
 private:
     Ui::BlockEngineWindow *ui;
+    std::unique_ptr<block_engine::core::Core> core;
 };
 
 #endif //BLOCK_ENGINE_QBLOCKENGINEWINDOW_H

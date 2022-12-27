@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iterator>
 #include <utility>
+#include <atomic>
 
 #include "model/scheme.h"
 #include "bus_factory.h"
@@ -24,6 +25,32 @@ struct ICalcEngineEventHandler {
      * Used for notify about important calculation events.
      */
     virtual void notifyEvent(const CoreEvent& event) = 0;
+};
+
+struct CoutPrintEventHandler : public ICalcEngineEventHandler {
+    std::shared_ptr<std::atomic_bool> is_end;
+
+    explicit CoutPrintEventHandler(std::shared_ptr<std::atomic_bool> is_end) : is_end(std::move(is_end)) {
+        *this->is_end = true;
+    }
+
+    virtual ~CoutPrintEventHandler() = default;
+
+    void notifyError(const CoreError& error) override {
+        std::cout << error << std::endl;
+    }
+
+    void notifyEvent(const CoreEvent& event) override {
+        std::cout << event << std::endl;
+        switch (event.sub_type) {
+            case CoreEventSubType::Start:
+                *is_end = false;
+                break;
+            case CoreEventSubType::Stop:
+                *is_end = true;
+                break;
+        }
+    }
 };
 
 class CalcEngine {

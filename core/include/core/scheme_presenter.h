@@ -22,7 +22,7 @@ struct DefaultConnectionPolicy {
         std::map<model::TBlockId, ConnectorPair> conns;
         std::map<model::TPinId, BusPtr> busByOutput;
 
-        for (const auto& [id, block]: scheme.blocks) {
+        for (const auto& [id, block]: scheme.getBlocks()) {
             const auto& [_, is_ok] = conns.emplace(
                 std::remove_const<decltype(id)>::type(id),
                 std::make_pair(Connector(block.inputs.size()), Connector(block.outputs.size()))
@@ -69,8 +69,8 @@ struct DefaultBlockPolicy {
    auto blocks(const model::Scheme& scheme) {
         std::map<int, BlockLogicBasePtr> blocks;
         std::transform(
-            scheme.blocks.begin(),
-            scheme.blocks.end(),
+            scheme.getBlocks().begin(),
+            scheme.getBlocks().end(),
             std::inserter(blocks, blocks.end()),
             [&](auto& it){
                 const auto blockName = scheme.getBlockType(it.second.block_type_id);
