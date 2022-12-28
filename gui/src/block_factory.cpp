@@ -14,7 +14,7 @@ BlockFactory::BlockFactory(const BlockFactory::TBlockFactoryMap& map) : map(map)
 
 BlockFactory::BlockFactory(BlockFactory::TBlockFactoryMap&& map) : map(std::move(map)) {}
 
-const BlockFactory::TBlockInitializer& BlockFactory::getInitializerByBlockName(const QString& block_name) {
+BlockFactory::TBlockInitializer BlockFactory::getInitializerByBlockName(const QString& block_name) {
     const auto it = map.find({block_name});
     return it != map.end() ? it->second : throw std::runtime_error(__PRETTY_FUNCTION__);
 }

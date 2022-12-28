@@ -24,7 +24,7 @@ public:
             inputs.begin() + 1,
             inputs.end(),
             inputs.begin()->get(),
-            [](auto& a, auto& b){ return a + b.get(); });
+            [](const auto& a, const auto& b){ return a + b.get(); });
         return true;
     }
 

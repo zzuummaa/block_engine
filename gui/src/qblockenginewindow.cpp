@@ -4,6 +4,7 @@
 #include "ui_qblockenginewindow.h"
 #include "block_factory.h"
 
+using namespace block_engine;
 using namespace block_engine::core;
 
 QBlockEngineWindow::QBlockEngineWindow(QWidget *parent) :
@@ -20,7 +21,8 @@ QBlockEngineWindow::QBlockEngineWindow(QWidget *parent) :
         qDebug() << "QMenuBar::triggered()" << action->text();
         if (action->text() == "Старт") {
             if (*calcIsEnd) {
-                core->onSetScheme(ui->scheme_editor->model.getScheme());
+				model::Scheme scheme = ui->scheme_editor->model.getScheme();
+				core->onSetScheme(scheme);
                 core->onStartCalc();
             }
         }

@@ -69,7 +69,7 @@ bool SchemeEditorModel::addLink(TId fromPinId, TId toPinId) {
         }
     }
 
-    links.emplace(inputId, outputId);
+    links.emplace(outputId, inputId);
 
     return true;
 }

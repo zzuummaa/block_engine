@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <memory>
 #include <qpin.h>
 #include <variant>
 

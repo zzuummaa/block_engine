@@ -18,14 +18,20 @@ public:
 
     Ref() : data(nullptr) { }
 
+	Ref(const Ref<Tp>& ref) = default;
+
     template<typename TRef>
     Ref(TRef&& ref) : data(std::addressof(std::forward<TRef>(ref))) { }
 
-    Tp& get() const {
+	Ref& operator=(const Ref&) = default;
+
+	Tp& get() {
+		return *data;
+	}
+
+    const Tp& get() const {
         return *data;
     }
-
-    Ref& operator=(const Ref&) = default;
 };
 
 class BlockLogicBase {

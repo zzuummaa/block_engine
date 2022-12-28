@@ -34,7 +34,7 @@ public:
 
     explicit BlockFactory(TBlockFactoryMap&& map);
 
-    const TBlockInitializer& getInitializerByBlockName(const QString& block_name);
+    TBlockInitializer getInitializerByBlockName(const QString& block_name);
 
     BlockInitializer::TBlock createBlockByName(const QString& block_name);
 };
