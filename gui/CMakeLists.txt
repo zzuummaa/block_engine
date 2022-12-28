@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
     src/block_factory.cpp
     src/qblockenginewindow.cpp
     src/qblockenginewindow.ui
+    src/camera_controller.cpp
     src/scene_controller.cpp
     src/scheme_editor_model.cpp
     src/qschemeeditor.cpp
@@ -23,6 +24,7 @@ add_executable(${PROJECT_NAME}
     src/qblock.ui
     src/qblocklist.cpp
     include/qblockenginewindow.h
+    include/scheme_editor/camera_controller.h
     include/scheme_editor/scene_controller.h
     include/scheme_editor/scheme_editor_model.h
     include/scheme_editor/qschemeeditor.h
