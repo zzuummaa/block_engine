@@ -11,6 +11,9 @@ public:
     void moveEvent(QPoint pos);
     void zoomEvent(int numSteps);
 
+    QPointF sceneCenter();
+    void setSceneCenter(QPointF newCenter);
+
     void updateSceneRect();
 
 protected slots:

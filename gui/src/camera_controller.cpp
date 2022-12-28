@@ -37,6 +37,15 @@ void CameraController::zoomEvent(int numSteps) {
     anim->start();
 }
 
+QPointF CameraController::sceneCenter() {
+    return center;
+}
+
+void CameraController::setSceneCenter(QPointF newCenter) {
+    center = newCenter;
+    updateSceneRect();
+}
+
 void CameraController::updateSceneRect() {
     const auto editorBounds = view->mapToScene(view->rect()).boundingRect();
     const auto padding = view->mapToScene(0, 0, 4, 4).boundingRect().size();
