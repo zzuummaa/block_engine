@@ -1,6 +1,6 @@
-#include "scheme_editor_model.h"
+#include "scheme_editor/scheme_editor_model.h"
 
-namespace block_engine {
+using namespace block_engine;
 
 SchemeEditorModel::SchemeEditorModel() {
 }
@@ -181,6 +181,4 @@ model::Scheme SchemeEditorModel::getScheme() const {
     }
 
     return scheme;
-}
-
 }

@@ -28,7 +28,7 @@ QBlockEngineWindow::QBlockEngineWindow(QWidget *parent) :
     });
 
     QObject::connect(ui->block_list, &QBlockList::blockDoubleClicked, ui->scheme_editor, [this](const auto& initializer){
-        ui->scheme_editor->addBlock(initializer.makeBlock());
+        ui->scheme_editor->sceneController->addBlock(initializer.makeBlock(), QPointF());
     });
 }
 

@@ -117,14 +117,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QSchemeEditor</class>
-   <extends>QGraphicsView</extends>
-   <header>qschemeeditor.h</header>
-  </customwidget>
-  <customwidget>
    <class>QBlockList</class>
    <extends>QListWidget</extends>
    <header>qblocklist.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QSchemeEditor</class>
+   <extends>QGraphicsView</extends>
+   <header>scheme_editor/qschemeeditor.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

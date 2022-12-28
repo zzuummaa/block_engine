@@ -12,8 +12,9 @@ add_executable(${PROJECT_NAME}
     src/block_factory.cpp
     src/qblockenginewindow.cpp
     src/qblockenginewindow.ui
-    src/qschemeeditor.cpp
+    src/scene_controller.cpp
     src/scheme_editor_model.cpp
+    src/qschemeeditor.cpp
     src/qpin.cpp
     src/pin_group_holder.cpp
     src/qbusline.cpp
@@ -22,8 +23,9 @@ add_executable(${PROJECT_NAME}
     src/qblock.ui
     src/qblocklist.cpp
     include/qblockenginewindow.h
-    include/qschemeeditor.h
-    include/scheme_editor_model.h
+    include/scheme_editor/scene_controller.h
+    include/scheme_editor/scheme_editor_model.h
+    include/scheme_editor/qschemeeditor.h
     include/qpin.h
     include/pin_group_holder.h
     include/qbusline.h

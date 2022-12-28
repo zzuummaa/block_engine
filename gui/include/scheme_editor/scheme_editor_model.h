@@ -1,14 +1,12 @@
 #pragma once
 
-#include <block_type_info.h>
-#include <bus_type_info.h>
+#include "block_type_info.h"
+#include "bus_type_info.h"
 
 #include <map>
 #include <set>
 
-#include <model/scheme.h>
-
-namespace block_engine {
+#include "model/scheme.h"
 
 class SchemeEditorModel {
 public:
@@ -24,7 +22,7 @@ public:
 
     bool addLink(TId fromPinId, TId toPinId);
 
-    [[nodiscard]] model::Scheme getScheme() const;
+    [[nodiscard]] block_engine::model::Scheme getScheme() const;
 private:
 
     std::map<TId, BlockTypeInfo> blocks;
@@ -37,5 +35,3 @@ private:
 
     std::set<std::pair<TId, TId>> links;
 };
-
-}
