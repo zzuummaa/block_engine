@@ -7,9 +7,10 @@ class CameraController : public QObject {
 public:
     CameraController(QGraphicsView* view, QObject* parent = nullptr);
 
-    void moveStartEvent(QPoint pos);
-    void moveEvent(QPoint pos);
+    void moveEvent(QPointF pos);
     void zoomEvent(int numSteps);
+
+    QPointF sceneCenter();
 
     void updateSceneRect();
 
@@ -19,8 +20,6 @@ protected slots:
 
 private:
     QGraphicsView* view;
-
-    QPoint lastPos;
 
     QPointF center;
     qreal scale;

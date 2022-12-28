@@ -42,7 +42,7 @@ void QSchemeEditor::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         sceneController->mousePressEvent(event->button(), mapToScene(event->pos()), itemAt(event->pos()));
     } else if (event->button() == Qt::RightButton) {
-        cameraController->moveStartEvent(event->pos());
+        lastPos = event->pos();
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -50,7 +50,9 @@ void QSchemeEditor::mousePressEvent(QMouseEvent* event) {
 
 void QSchemeEditor::mouseMoveEvent(QMouseEvent* event) {
     if (event->buttons() & Qt::RightButton) {
-        cameraController->moveEvent(event->pos());
+        auto diff = mapToScene(lastPos) - mapToScene(event->pos());
+        cameraController->moveEvent(cameraController->sceneCenter() + diff);
+        lastPos = event->pos();
     }
 
     QGraphicsView::mouseMoveEvent(event);

@@ -11,15 +11,8 @@ CameraController::CameraController(
     , numScheduledScalings(0) {
 }
 
-
-void CameraController::moveStartEvent(QPoint pos) {
-    lastPos = pos;
-}
-
-void CameraController::moveEvent(QPoint pos) {
-    auto diff = view->mapToScene(lastPos) - view->mapToScene(pos);
-    center += diff;
-    lastPos = pos;
+void CameraController::moveEvent(QPointF pos) {
+    center = pos;
     updateSceneRect();
 }
 
@@ -35,6 +28,10 @@ void CameraController::zoomEvent(int numSteps) {
     connect(anim, SIGNAL (valueChanged(qreal)), SLOT (scalingTime(qreal)));
     connect(anim, SIGNAL (finished()), SLOT (animFinished()));
     anim->start();
+}
+
+QPointF CameraController::sceneCenter() {
+    return center;
 }
 
 void CameraController::updateSceneRect() {

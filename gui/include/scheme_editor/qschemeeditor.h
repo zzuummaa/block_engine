@@ -31,4 +31,7 @@ protected:
     void keyReleaseEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
 
     void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+
+private:
+    QPoint lastPos;
 };
