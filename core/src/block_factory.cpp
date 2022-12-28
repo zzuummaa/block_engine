@@ -55,7 +55,7 @@ BlockFactory makeBlockFactory() {
     BlockFactoryBuilder builder;
 
     builder.create_block_initializers<ConsoleBlockLogic, ConsoleBlockDescription>();
-    builder.create_block_initializers<ConstBlockLogic, ConstBlockDescription>(0);
+    builder.create_block_initializers<ConstBlockLogic, ConstBlockDescription>(7);
     builder.create_block_initializers<SumBlockLogic, SumBlockDescription>();
     builder.create_block_initializers<LimitBlockLogic, LimitBlockDescription>();
 

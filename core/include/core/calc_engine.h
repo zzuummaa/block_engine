@@ -56,23 +56,31 @@ struct CoutPrintEventHandler : public ICalcEngineEventHandler {
 class CalcEngine {
 public:
     explicit CalcEngine(const model::Scheme& scheme, std::shared_ptr<ICalcEngineEventHandler> event_handler)
-        : event_handler(std::move(event_handler)) {
+        : eventHandler(std::move(event_handler)) {
         setScheme(scheme);
     };
 
     bool start() {
-        return true;
+        bool isOk = true;
+        for (auto& blockLogic : orderedBlockLogics) {
+            isOk &= blockLogic->start();
+        }
+        return isOk;
     }
 
     bool stop() {
-        return true;
+        bool isOk = true;
+        for (auto& blockLogic : orderedBlockLogics) {
+            isOk &= blockLogic->start();
+        }
+        return isOk;
     }
 
     bool process_step() {
-        for (auto& block_logic : ordered_block_logics) {
-            if (!block_logic->calc()) {
-                event_handler->notifyEvent({
-                    block_logic->block.id,
+        for (auto& blockLogic : orderedBlockLogics) {
+            if (!blockLogic->calc()) {
+                eventHandler->notifyEvent({
+                    blockLogic->block.id,
                     CoreEventSubType::Stop
                 });
                 return false;
@@ -83,26 +91,26 @@ public:
     }
 
 private:
-    BlockManagementLogic block_management_logic;
-    std::vector<int> calc_order;
-    std::vector<BlockLogicBasePtr> ordered_block_logics;
-    std::shared_ptr<ICalcEngineEventHandler> event_handler;
+    BlockManagementLogic blockManagementLogic;
+    std::vector<int> calcOrder;
+    std::vector<BlockLogicBasePtr> orderedBlockLogics;
+    std::shared_ptr<ICalcEngineEventHandler> eventHandler;
 
     void setScheme(const model::Scheme& scheme) {
-        block_management_logic.setBlocks(DefaultBlockPolicy(makeBlockFactory()).blocks(scheme));
-        block_management_logic.setConnectors(DefaultConnectionPolicy(makeBusFactory()).connectors(scheme));
-        block_management_logic.connectBlocks();
+        blockManagementLogic.setBlocks(DefaultBlockPolicy(makeBlockFactory()).blocks(scheme));
+        blockManagementLogic.setConnectors(DefaultConnectionPolicy(makeBusFactory()).connectors(scheme));
+        blockManagementLogic.connectBlocks();
 
-        calc_order = graph::topologySort(scheme);
+        calcOrder = graph::topologySort(scheme);
 
-        ordered_block_logics.clear();
+        orderedBlockLogics.clear();
         std::transform(
-            calc_order.begin(),
-            calc_order.end(),
-            std::inserter(ordered_block_logics, ordered_block_logics.end()),
-            [&](int id){ return block_management_logic.getBlock(id); });
+            calcOrder.begin(),
+            calcOrder.end(),
+            std::inserter(orderedBlockLogics, orderedBlockLogics.end()),
+            [&](int id){ return blockManagementLogic.getBlock(id); });
 
-        std::copy(calc_order.begin(), calc_order.end(), std::ostream_iterator<int>(std::cout, " "));
+        std::copy(calcOrder.begin(), calcOrder.end(), std::ostream_iterator<int>(std::cout, " "));
         std::cout << std::endl;
     }
 };

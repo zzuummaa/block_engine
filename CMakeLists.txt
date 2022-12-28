@@ -3,7 +3,7 @@ project(block_engine)
 
 option(BLOCK_ENGINE_SANITIZERS_ENABLE "" OFF)
 
-IF (WIN32)
+IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_STANDARD 17)
 ELSE()
     set(CMAKE_CXX_STANDARD 20)
@@ -12,7 +12,7 @@ ENDIF()
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-IF (WIN32)
+IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-Wno-error=c++20-designator)
 ELSE()
     add_compile_options(-Wno-error=missing-field-initializers -Wno-attributes)

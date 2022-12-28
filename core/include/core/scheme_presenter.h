@@ -44,11 +44,11 @@ struct DefaultConnectionPolicy {
 
             auto outputConnectorPair = conns.find(link.output.getBlockId());
             if (outputConnectorPair == conns.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
-            Connector::output(outputConnectorPair->second).setBus(link.output.getPinIdx(), bus);
+            Connector::output(outputConnectorPair->second).setBusIfNotSet(link.output.getPinIdx(), bus);
 
             auto inputConnectorPair = conns.find(link.input.getBlockId());
             if (inputConnectorPair == conns.end()) throw std::runtime_error(__PRETTY_FUNCTION__);
-            Connector::input(inputConnectorPair->second).setBus(link.input.getPinIdx(), bus);
+            Connector::input(inputConnectorPair->second).setBusIfNotSet(link.input.getPinIdx(), bus);
         }
 
         for (const auto& [_, connectorPair] : conns) {

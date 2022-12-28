@@ -21,8 +21,7 @@ QBlockEngineWindow::QBlockEngineWindow(QWidget *parent) :
         qDebug() << "QMenuBar::triggered()" << action->text();
         if (action->text() == "Старт") {
             if (*calcIsEnd) {
-				model::Scheme scheme = ui->scheme_editor->model.getScheme();
-				core->onSetScheme(scheme);
+                core->onSetScheme(ui->scheme_editor->model.getScheme());
                 core->onStartCalc();
             }
         }

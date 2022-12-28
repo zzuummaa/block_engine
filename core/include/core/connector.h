@@ -54,8 +54,10 @@ struct Connector : private std::vector<BusPtr> {
         return *at(n);
     }
 
-    void setBus(size_t n, BusPtr bus) {
-        if (at(n)) throw std::invalid_argument(__PRETTY_FUNCTION__);
+    void setBusIfNotSet(size_t n, BusPtr bus) {
+        if (n >= count() || ((*this)[n] != nullptr && (*this)[n] != bus)) {
+            throw std::invalid_argument(__PRETTY_FUNCTION__);
+        }
         at(n) = std::move(bus);
     }
 

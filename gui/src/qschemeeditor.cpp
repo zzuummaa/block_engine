@@ -62,11 +62,11 @@ QSchemeEditor::QSchemeEditor(QWidget* parent) : QGraphicsView(parent), isShiftPr
     setTransformationAnchor(QGraphicsView::NoAnchor);
     setScene(scene);
 
-    QObject::connect(&pinLinker, &QPinLinkDetector::link, this, [this](QPin* from, QPin* to){
+    QObject::connect(&pinLinker, &QPinLinkDetector::link, this, [](QPin* /*from*/, QPin* /*to*/){
 //        qDebug() << "link from" << from << "to" << to;
-        if (model.addLink(reinterpret_cast<SchemeEditorModel::TId>(from), reinterpret_cast<SchemeEditorModel::TId>(to))) {
-            // old way
-        }
+//        if (model.addLink(reinterpret_cast<SchemeEditorModel::TId>(from), reinterpret_cast<SchemeEditorModel::TId>(to))) {
+//            // old way
+//        }
     });
 }
 
@@ -124,20 +124,18 @@ void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {
     auto busIt1 = busses.find(pin1);
     auto busIt2 = busses.find(pin2);
 
+    std::shared_ptr<QBus> busPtr;
     if (busIt1 == busses.end() && busIt2 == busses.end()) {
         QBus bus;
         if (!bus.linkPin(pin1) || !bus.linkPin(pin2)) {
             return;
         }
 
-        auto busPtr = std::make_shared<QBus>(std::move(bus));
+        busPtr = std::make_shared<QBus>(std::move(bus));
         if (!busses.emplace(pin1, busPtr).second
         ||  !busses.emplace(pin2, busPtr).second) {
             throw std::runtime_error(__PRETTY_FUNCTION__);
         }
-
-        addBusLine(std::make_shared<QBus>(bus), proxy1Center, proxy2Center);
-
     } else if (busIt1 != busses.end() && busIt2 == busses.end()) {
         if (!busIt1->second->linkPin(pin2)) {
             return;
@@ -147,7 +145,7 @@ void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {
             throw std::runtime_error(__PRETTY_FUNCTION__);
         }
 
-        addBusLine(busIt1->second, proxy1Center, proxy2Center);
+        busPtr = busIt1->second;
 
     } else if (busIt1 == busses.end() && busIt2 != busses.end()) {
         if (!busIt2->second->linkPin(pin1)) {
@@ -158,12 +156,16 @@ void QSchemeEditor::tryAddBusLine(QPin* pin1, QPin* pin2) {
             throw std::runtime_error(__PRETTY_FUNCTION__);
         }
 
-        addBusLine(busIt2->second, proxy1Center, proxy2Center);
+        busPtr = busIt2->second;
     } else {
-        auto combinedBus = concatBusses(busIt1->second, busIt2->second);
-        if (combinedBus) {
-            addBusLine(combinedBus, proxy1Center, proxy2Center);
+        busPtr = concatBusses(busIt1->second, busIt2->second);
+    }
+
+    if (busPtr) {
+        if (!model.addLink(reinterpret_cast<SchemeEditorModel::TId>(pin1), reinterpret_cast<SchemeEditorModel::TId>(pin2))) {
+            throw std::runtime_error(__PRETTY_FUNCTION__);
         }
+        addBusLine(busPtr, proxy1Center, proxy2Center);
     }
 }
 
